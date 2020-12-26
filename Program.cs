@@ -31,8 +31,8 @@ namespace ResultManager
                 int distPercentage =  post.DistrictQuota;
                  int distQuantity = 0;
                 if(distPercentage>0){
-                    distQuantity = (distPercentage/100)*vacancies;
-                   
+                    float d = ((float) distPercentage/100)*vacancies;
+                    distQuantity = (int) Math.Floor(d);
                 }
 
                 int femalePercentage = post.FemaleQuota;
@@ -61,13 +61,14 @@ namespace ResultManager
                 postCalculation.FemaleQuantity = femaleQuantity;
                 postCalculation.FreedomFighterQuantity = freedomFighterQuantity;
                 postCalculation.TribalQuantity = tribalQuantity;
+                postCalculation.GeneralQuota = generalQuota;
 
                db.PostCalculation.Add(postCalculation);
                db.SaveChanges();
 
             }
           
-            Console.ReadLine();
+            Console.WriteLine("success");
         }
     }
 }
