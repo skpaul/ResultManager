@@ -20,9 +20,54 @@ namespace ResultManager
 
             var db = new result_managerContext();
 
-            var test = (from c in db.Posts select c).FirstOrDefault();
+            var posts = db.Posts.ToList();
+            foreach (var post in posts)
+            {
+                Console.WriteLine(post.PostName);
 
-            Console.WriteLine(test.PostName);
+                int postId = post.PostId;
+
+                int vacancies = post.Vacancies;
+                int distPercentage =  post.DistrictQuota;
+                 int distQuantity = 0;
+                if(distPercentage>0){
+                    distQuantity = (distPercentage/100)*vacancies;
+                   
+                }
+
+                int femalePercentage = post.FemaleQuota;
+                int femaleQuantity = 0;
+                if(femalePercentage > 0){
+                    femaleQuantity =  (femalePercentage/100)*vacancies;
+                }
+
+                int freedomFighterPercentage = post.FreedomFighterQuota;
+                int freedomFighterQuantity = 0;
+                if(freedomFighterPercentage>0){
+                    freedomFighterQuantity = (freedomFighterPercentage/100)*vacancies;
+                }
+
+                int tribalPercentage = post.TribalQuota;
+                int tribalQuantity = 0;
+                if(tribalPercentage>0){
+                    tribalQuantity = (tribalPercentage/100)*vacancies;
+                }
+
+                int generalQuota = vacancies - (distQuantity+femaleQuantity+freedomFighterQuantity+tribalQuantity);
+
+                var postCalculation = new PostCalculation();
+                postCalculation.PostId = post.PostId;
+                postCalculation.DistQuantity = distQuantity;
+                postCalculation.FemaleQuantity = femaleQuantity;
+                postCalculation.FreedomFighterQuantity = freedomFighterQuantity;
+                postCalculation.TribalQuantity = tribalQuantity;
+
+               db.PostCalculation.Add(postCalculation);
+               db.SaveChanges();
+
+            }
+          
+            Console.ReadLine();
         }
     }
 }
