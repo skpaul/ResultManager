@@ -17,6 +17,12 @@ namespace ResultManager
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("==================================");
+            Console.WriteLine("DIA Data Mining Tool");
+            Console.WriteLine("==================================\n");
+            Console.WriteLine("Press any key to continue ...");
+
+            Console.ReadLine();
 
             var db = new result_managerContext();
 
@@ -69,6 +75,7 @@ namespace ResultManager
             }
           
             Console.WriteLine("success");
+            Console.ReadLine();
         }
     }
 }
