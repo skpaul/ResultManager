@@ -4,8 +4,11 @@
 //dotnet add package MySql.Data.EntityFrameworkCore -v 8.0.22
 //dotnet tool install --global dotnet-ef
 
+//Create the model
 //dotnet ef dbcontext scaffold "server=localhost;userid=root;password=;database=result_manager;" MySql.Data.EntityFrameworkCore -o Models
 
+//Update the model. re-scaffold the model by running the command that you originally ran with the -Force option added. That will result in the contents of the specified folder being over-written.
+//dotnet ef dbcontext scaffold "server=localhost;userid=root;password=;database=result_manager;" MySql.Data.EntityFrameworkCore -o Models -f
 
 using System;
 using ResultManager.Models;
@@ -22,14 +25,24 @@ namespace ResultManager
             Console.WriteLine("==================================\n");
             Console.WriteLine("Press any key to continue ...");
 
-            Console.ReadLine();
+           // Console.ReadLine();
 
             var db = new result_managerContext();
+            calculatePost(db);
+            pickDistQuota(db);
+            Console.WriteLine("success");
+            Console.ReadLine();
+        }
+
+        static void calculatePost(result_managerContext db){
+            Console.WriteLine("Calculating posts ...");
+            System.Threading.Thread.Sleep(500);
 
             var posts = db.Posts.ToList();
             foreach (var post in posts)
             {
-                Console.WriteLine(post.PostName);
+                Console.WriteLine("Current post- " + post.PostName);
+                System.Threading.Thread.Sleep(500);
 
                 int postId = post.PostId;
 
@@ -74,8 +87,39 @@ namespace ResultManager
 
             }
           
-            Console.WriteLine("success");
-            Console.ReadLine();
+          Console.WriteLine("Post calculation completed.");
+        }
+
+        static void pickDistQuota(result_managerContext db){
+            Console.WriteLine("Picking district quota ...");
+            System.Threading.Thread.Sleep(500);
+
+            var post = (from p in db.PostCalculation where p.DistQuantity> (p.DistFound + p.DistTransferred) select new {p.Id, p.PostId}).FirstOrDefault();
+            if(post == null){
+                //Do nothing.
+                Console.WriteLine("...");
+                System.Threading.Thread.Sleep(500);
+            }
+            else{
+                /*
+                    select 1 candidate who 
+                        - applied for this post
+                        - claimed district quota
+                        - isSelected flag is false
+                        - has highest marks in written and viva
+
+                    if applicant found:
+                        - set isSelected = true.
+                        - distFound++
+                    
+                    if applicant not found:
+                        - distTransferred++
+                        - generalQuota
+                */
+                
+                //more posts might be there. 
+                pickDistQuota(db); //call recursively
+            }
         }
     }
 }

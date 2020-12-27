@@ -16,6 +16,7 @@ namespace ResultManager.Models
         }
 
         public virtual DbSet<Applicants> Applicants { get; set; }
+        public virtual DbSet<DiaCedu> DiaCedu { get; set; }
         public virtual DbSet<DistInfo> DistInfo { get; set; }
         public virtual DbSet<PostCalculation> PostCalculation { get; set; }
         public virtual DbSet<Posts> Posts { get; set; }
@@ -24,6 +25,7 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -44,6 +46,303 @@ namespace ResultManager.Models
                 entity.Property(e => e.PostId)
                     .HasColumnName("postId")
                     .HasColumnType("int(11)");
+            });
+
+            modelBuilder.Entity<DiaCedu>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("dia_cedu");
+
+                entity.Property(e => e.Ageactual)
+                    .HasColumnName("ageactual")
+                    .HasMaxLength(26)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.ComputerLiteracy)
+                    .HasColumnName("computer_literacy")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Curricular)
+                    .HasColumnName("curricular")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.EightPass)
+                    .HasColumnName("eight_pass")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.ExpFive)
+                    .HasColumnName("exp_five")
+                    .HasMaxLength(3)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GDuration)
+                    .HasColumnName("g_duration")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GExam)
+                    .HasColumnName("g_exam")
+                    .HasMaxLength(30)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GInstitute)
+                    .HasColumnName("g_institute")
+                    .HasMaxLength(49)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GResult)
+                    .HasColumnName("g_result")
+                    .HasMaxLength(3)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GResultEq)
+                    .HasColumnName("g_result_eq")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GResultType)
+                    .HasColumnName("g_result_type")
+                    .HasMaxLength(12)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GSub)
+                    .HasColumnName("g_sub")
+                    .HasMaxLength(44)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.GYear)
+                    .HasColumnName("g_year")
+                    .HasMaxLength(4)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HBoard)
+                    .HasColumnName("h_board")
+                    .HasMaxLength(15)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HExam)
+                    .HasColumnName("h_exam")
+                    .HasMaxLength(19)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HGroup)
+                    .HasColumnName("h_group")
+                    .HasMaxLength(22)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HResult)
+                    .HasColumnName("h_result")
+                    .HasMaxLength(3)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HResultEq)
+                    .HasColumnName("h_result_eq")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HResultType)
+                    .HasColumnName("h_result_type")
+                    .HasMaxLength(12)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HRoll)
+                    .HasColumnName("h_roll")
+                    .HasMaxLength(11)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HYear)
+                    .HasColumnName("h_year")
+                    .HasMaxLength(4)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(3)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Invoice)
+                    .HasColumnName("invoice")
+                    .HasMaxLength(6)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.JobExp)
+                    .HasColumnName("job_exp")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MDuration)
+                    .HasColumnName("m_duration")
+                    .HasMaxLength(2)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MExam)
+                    .HasColumnName("m_exam")
+                    .HasMaxLength(27)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MInstitute)
+                    .HasColumnName("m_institute")
+                    .HasMaxLength(49)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MResult)
+                    .HasColumnName("m_result")
+                    .HasMaxLength(3)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MResultEq)
+                    .HasColumnName("m_result_eq")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MResultType)
+                    .HasColumnName("m_result_type")
+                    .HasMaxLength(12)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MSub)
+                    .HasColumnName("m_sub")
+                    .HasMaxLength(36)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.MYear)
+                    .HasColumnName("m_year")
+                    .HasMaxLength(4)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PDuration)
+                    .HasColumnName("p_duration")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PExam)
+                    .HasColumnName("p_exam")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PInstitute)
+                    .HasColumnName("p_institute")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PResult)
+                    .HasColumnName("p_result")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PResultEq)
+                    .HasColumnName("p_result_eq")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PResultType)
+                    .HasColumnName("p_result_type")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PSub)
+                    .HasColumnName("p_sub")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PYear)
+                    .HasColumnName("p_year")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Post)
+                    .HasColumnName("post")
+                    .HasColumnType("int(3)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PostCode)
+                    .HasColumnName("post_code")
+                    .HasColumnType("int(3)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PostName)
+                    .HasColumnName("post_name")
+                    .HasMaxLength(36)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Roll)
+                    .HasColumnName("roll")
+                    .HasColumnType("int(8)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SBoard)
+                    .HasColumnName("s_board")
+                    .HasMaxLength(15)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SExam)
+                    .HasColumnName("s_exam")
+                    .HasMaxLength(16)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SGroup)
+                    .HasColumnName("s_group")
+                    .HasMaxLength(20)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SResult)
+                    .HasColumnName("s_result")
+                    .HasMaxLength(3)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SResultEq)
+                    .HasColumnName("s_result_eq")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SResultType)
+                    .HasColumnName("s_result_type")
+                    .HasMaxLength(12)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SRoll)
+                    .HasColumnName("s_roll")
+                    .HasMaxLength(11)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.SYear)
+                    .HasColumnName("s_year")
+                    .HasColumnType("int(4)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Sl)
+                    .HasColumnName("sl")
+                    .HasColumnType("int(5)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Test)
+                    .HasColumnName("test")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Time)
+                    .HasColumnName("time")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.User)
+                    .HasColumnName("user")
+                    .HasMaxLength(6)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Venue)
+                    .HasColumnName("venue")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<DistInfo>(entity =>
