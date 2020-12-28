@@ -14,6 +14,7 @@ using System;
 using ResultManager.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace ResultManager
 {
@@ -22,18 +23,32 @@ namespace ResultManager
         static void Main(string[] args)
         {
          
-          
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("###  DIA Data Mining System ###");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine();
+             Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine("Press any key to continue ...");
+            Console.ResetColor();
+            Console.ReadLine();
+
             var db = new result_managerContext();
             
             try
             {
                 resetPostTable(db);
                 preparePosts(db);
-                truncatePostQuota(db);
-                preparePostQuota(db);
+                 truncatePostQuota(db);
+                // preparePostQuota(db);
 
                 // truncatePostQuotaDivision(db);
                 // preparePostQuotaDivision(db);
+
+                Console.WriteLine("Success");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadLine();
             }
             catch (System.Exception exp)
             {
@@ -42,6 +57,15 @@ namespace ResultManager
             }
         }
 
+        static void WriteFullLine(string value)
+        {
+            // Write an entire line to the console with the string.
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(value.PadRight(Console.WindowWidth - 1));
+            // Reset the color.
+            Console.ResetColor();
+        }
         static void writeLine(string message, ConsoleColor background=ConsoleColor.Black, ConsoleColor foreground = ConsoleColor.White){
             Console.BackgroundColor = background;
             Console.ForegroundColor = foreground;
@@ -61,28 +85,43 @@ namespace ResultManager
 
         //reset posts table
         static void resetPostTable(result_managerContext db){
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("Resetting post table...");
+            Thread.Sleep(300);
             var commandText = "update posts set totalQuotaPercentage=0.00, totalQuotaQuantity=0";
             db.Database.ExecuteSqlRaw(commandText);
-            writeLine("Posts table has been reset.", ConsoleColor.Black, ConsoleColor.Blue);
+            Console.Write("\t\t");
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+
+            Console.Write("success");
+            Console.ResetColor();
+            Console.WriteLine("");
+            Console.WriteLine("");
         }
 
         //This method breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity.
         static void preparePosts(result_managerContext db){
-            Console.WriteLine("breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity ... ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Preparing posts ... "); Console.ResetColor();
             var quotaTotal = db.Quotas.Sum(s=>s.Percentage);
-            writeLine("Total quota - " + quotaTotal);
-
-            writeLine("Reading posts ...");
+           
             var posts = db.Posts.OrderBy(o=>o.PostName).ToList();
             foreach (var post in posts)
             {
-                writeLine($"Current post name-{post.PostName}");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"\t{post.PostName}-");
+                Console.ForegroundColor = ConsoleColor.Cyan;              
+                Console.Write($" Vacancy-{post.Vacancies}");
                 post.TotalQuotaPercentage = quotaTotal;
                 double d = (double)quotaTotal/100;
                 double v = (double) d* post.Vacancies;
                 double quantity = v;
                 post.TotalQuotaQuantity = Math.Round(v);
-                writeLine($"Total quota quantity-{quantity}");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Write($" Quota-{quantity}");
+                Console.WriteLine();
+                Thread.Sleep(200);
             }
 
             db.SaveChanges();
@@ -90,10 +129,18 @@ namespace ResultManager
 
         #region Post quota
          static void truncatePostQuota(result_managerContext db){
-             writeLine("Truncating post quota ...", ConsoleColor.DarkGreen, ConsoleColor.Black);
+            Console.WriteLine(); 
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("TRUNCATING post quotas...");
+            Thread.Sleep(300);
             var commandText = "TRUNCATE TABLE post_quota";
             db.Database.ExecuteSqlRaw(commandText);
-            writeLine("post_quota table has been TRUNCATED.", ConsoleColor.Black, ConsoleColor.Blue);
+             Console.Write("\t");
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("success");
+            Console.ResetColor();
+            Console.WriteLine();
         }
 
         static void preparePostQuota(result_managerContext db){
@@ -160,4 +207,5 @@ namespace ResultManager
 
         #endregion
     }
+
 }
