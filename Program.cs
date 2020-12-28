@@ -31,6 +31,8 @@ namespace ResultManager
                 preparePosts(db);
                 truncatePostQuotaDistribution(db);
                 preparePostQuotaDistribution(db);
+
+                truncatePostQuotaDivision(db);
             }
             catch (System.Exception exp)
             {
@@ -122,6 +124,17 @@ namespace ResultManager
             writeLine("Post Quota Distribution done.");
 
         }
+        #endregion
+
+        #region Post Quota Division
+        static void truncatePostQuotaDivision(result_managerContext db)
+        {
+            var commandText = "TRUNCATE TABLE post_quota_division";
+            db.Database.ExecuteSqlRaw(commandText);
+            writeLine("post_quota_division has been truncated.", ConsoleColor.Black, ConsoleColor.Blue);
+        }
+
+
         #endregion
     }
 }

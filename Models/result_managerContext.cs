@@ -20,6 +20,8 @@ namespace ResultManager.Models
         public virtual DbSet<Divisions> Divisions { get; set; }
         public virtual DbSet<PostCalculation> PostCalculation { get; set; }
         public virtual DbSet<PostQuotaDistribution> PostQuotaDistribution { get; set; }
+        public virtual DbSet<PostQuotaDivision> PostQuotaDivision { get; set; }
+        public virtual DbSet<PostQuotaDivisionDistrict> PostQuotaDivisionDistrict { get; set; }
         public virtual DbSet<Posts> Posts { get; set; }
         public virtual DbSet<Quotas> Quotas { get; set; }
 
@@ -27,6 +29,7 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -187,6 +190,67 @@ namespace ResultManager.Models
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
                     .HasColumnType("double(5,2)");
+            });
+
+            modelBuilder.Entity<PostQuotaDivision>(entity =>
+            {
+                entity.ToTable("post_quota_division");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DecimalQuantity)
+                    .HasColumnName("decimalQuantity")
+                    .HasColumnType("double(5,2)");
+
+                entity.Property(e => e.DivisionName)
+                    .IsRequired()
+                    .HasColumnName("divisionName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.PostName)
+                    .IsRequired()
+                    .HasColumnName("postName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.QuotaName)
+                    .IsRequired()
+                    .HasColumnName("quotaName")
+                    .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<PostQuotaDivisionDistrict>(entity =>
+            {
+                entity.ToTable("post_quota_division_district");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DecimalQuantity)
+                    .HasColumnName("decimalQuantity")
+                    .HasColumnType("double(5,2)");
+
+                entity.Property(e => e.DistrictName)
+                    .IsRequired()
+                    .HasColumnName("districtName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.DivisionName)
+                    .IsRequired()
+                    .HasColumnName("divisionName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.PostName)
+                    .IsRequired()
+                    .HasColumnName("postName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.QuotaName)
+                    .IsRequired()
+                    .HasColumnName("quotaName")
+                    .HasMaxLength(200);
             });
 
             modelBuilder.Entity<Posts>(entity =>
