@@ -8,9 +8,7 @@ namespace ResultManager.Models
         public int PostId { get; set; }
         public string PostName { get; set; }
         public int Vacancies { get; set; }
-        public int DistrictQuota { get; set; }
-        public int FemaleQuota { get; set; }
-        public int FreedomFighterQuota { get; set; }
-        public int TribalQuota { get; set; }
+        public double TotalQuotaPercentage { get; set; }
+        public int TotalQuotaQuantity { get; set; }
     }
 }
