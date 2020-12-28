@@ -18,8 +18,7 @@ namespace ResultManager.Models
         public virtual DbSet<Applicants> Applicants { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
-        public virtual DbSet<PostCalculation> PostCalculation { get; set; }
-        public virtual DbSet<PostQuotaDistribution> PostQuotaDistribution { get; set; }
+        public virtual DbSet<PostQuota> PostQuota { get; set; }
         public virtual DbSet<PostQuotaDivision> PostQuotaDivision { get; set; }
         public virtual DbSet<PostQuotaDivisionDistrict> PostQuotaDivisionDistrict { get; set; }
         public virtual DbSet<Posts> Posts { get; set; }
@@ -29,7 +28,6 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -38,18 +36,66 @@ namespace ResultManager.Models
         {
             modelBuilder.Entity<Applicants>(entity =>
             {
-                entity.HasKey(e => e.ApplicantId)
-                    .HasName("PRIMARY");
-
                 entity.ToTable("applicants");
 
-                entity.Property(e => e.ApplicantId)
-                    .HasColumnName("applicantId")
-                    .HasColumnType("int(11)");
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(3)");
 
-                entity.Property(e => e.PostId)
-                    .HasColumnName("postId")
-                    .HasColumnType("int(11)");
+                entity.Property(e => e.Dob)
+                    .HasColumnName("dob")
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Ffq)
+                    .HasColumnName("ffq")
+                    .HasMaxLength(30)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(27)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PermanentDistrict)
+                    .HasColumnName("permanentDistrict")
+                    .HasMaxLength(200)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PostCode)
+                    .HasColumnName("postCode")
+                    .HasColumnType("int(3)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PostName)
+                    .HasColumnName("postName")
+                    .HasMaxLength(200)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PresentDistrict)
+                    .HasColumnName("presentDistrict")
+                    .HasMaxLength(200)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Religion)
+                    .HasColumnName("religion")
+                    .HasMaxLength(9)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Roll)
+                    .HasColumnName("roll")
+                    .HasColumnType("int(8)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Sex)
+                    .HasColumnName("sex")
+                    .HasColumnType("int(1)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("userId")
+                    .HasMaxLength(6)
+                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<Districts>(entity =>
@@ -93,77 +139,9 @@ namespace ResultManager.Models
                     .HasColumnType("double(5,2)");
             });
 
-            modelBuilder.Entity<PostCalculation>(entity =>
+            modelBuilder.Entity<PostQuota>(entity =>
             {
-                entity.ToTable("post_calculation");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.DistFound)
-                    .HasColumnName("distFound")
-                    .HasColumnType("int(11)")
-                    .HasComment("district quota claimed by applicants");
-
-                entity.Property(e => e.DistQuantity)
-                    .HasColumnName("distQuantity")
-                    .HasColumnType("int(11)")
-                    .HasComment("declared by ministry");
-
-                entity.Property(e => e.DistTransferred)
-                    .HasColumnName("distTransferred")
-                    .HasColumnType("int(11)")
-                    .HasComment("if enough applicant not found, then transfer this quantity to general");
-
-                entity.Property(e => e.FemaleFound)
-                    .HasColumnName("femaleFound")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.FemaleQuantity)
-                    .HasColumnName("femaleQuantity")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.FemaleTransferred)
-                    .HasColumnName("femaleTransferred")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.FreedomFighterFound)
-                    .HasColumnName("freedomFighterFound")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.FreedomFighterQuantity)
-                    .HasColumnName("freedomFighterQuantity")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.FreedomFighterTransferred)
-                    .HasColumnName("freedomFighterTransferred")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.GeneralQuota)
-                    .HasColumnName("generalQuota")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.PostId)
-                    .HasColumnName("postId")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.TribalFound)
-                    .HasColumnName("tribalFound")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.TribalQuantity)
-                    .HasColumnName("tribalQuantity")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.TribalTransferred)
-                    .HasColumnName("tribalTransferred")
-                    .HasColumnType("int(11)");
-            });
-
-            modelBuilder.Entity<PostQuotaDistribution>(entity =>
-            {
-                entity.ToTable("post_quota_distribution");
+                entity.ToTable("post_quota");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -202,7 +180,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,9)");
 
                 entity.Property(e => e.DivisionName)
                     .IsRequired()

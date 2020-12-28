@@ -29,10 +29,11 @@ namespace ResultManager
             {
                 resetPostTable(db);
                 preparePosts(db);
-                truncatePostQuotaDistribution(db);
-                preparePostQuotaDistribution(db);
+                truncatePostQuota(db);
+                preparePostQuota(db);
 
-                truncatePostQuotaDivision(db);
+                // truncatePostQuotaDivision(db);
+                // preparePostQuotaDivision(db);
             }
             catch (System.Exception exp)
             {
@@ -87,15 +88,16 @@ namespace ResultManager
             db.SaveChanges();
         }
 
-        #region Post quota distribution
-         static void truncatePostQuotaDistribution(result_managerContext db){
-            var commandText = "TRUNCATE TABLE post_quota_distribution";
+        #region Post quota
+         static void truncatePostQuota(result_managerContext db){
+             writeLine("Truncating post quota ...", ConsoleColor.DarkGreen, ConsoleColor.Black);
+            var commandText = "TRUNCATE TABLE post_quota";
             db.Database.ExecuteSqlRaw(commandText);
-            writeLine("post_quota_distribution table has been TRUNCATED.", ConsoleColor.Black, ConsoleColor.Blue);
+            writeLine("post_quota table has been TRUNCATED.", ConsoleColor.Black, ConsoleColor.Blue);
         }
 
-        static void preparePostQuotaDistribution(result_managerContext db){
-            writeLine("Preparing post quota distribution ...", ConsoleColor.DarkGreen, ConsoleColor.Black);
+        static void preparePostQuota(result_managerContext db){
+            writeLine("Preparing post quota ...", ConsoleColor.DarkGreen, ConsoleColor.Black);
             
             var quotas = db.Quotas.OrderBy(o=>o.Priority).ToList();
             var posts = db.Posts.ToList();
@@ -111,12 +113,12 @@ namespace ResultManager
                     double percentage = quota.Percentage;
                     double d = (double) percentage/100;
                     double c = d*vacancy;
-                    // var newPostQuotaDist = new PostQuotaDistribution();
-                    // newPostQuotaDist.PostName = post.PostName;
-                    // newPostQuotaDist.QuotaName = quota.Name;
-                    // newPostQuotaDist.DecimalQuantity = c;
-                    // db.PostQuotaDistribution.Add(newPostQuotaDist);
-                    // writeLine($"\t Quota- {quota.Name}, {c}");
+                    var newPostQuotaDist = new PostQuota();
+                    newPostQuotaDist.PostName = post.PostName;
+                    newPostQuotaDist.QuotaName = quota.Name;
+                    newPostQuotaDist.DecimalQuantity = c;
+                    db.PostQuota.Add(newPostQuotaDist);
+                    writeLine($"\t Quota- {quota.Name}, {c}");
                 }
                 db.SaveChanges();
             }
@@ -134,6 +136,27 @@ namespace ResultManager
             writeLine("post_quota_division has been truncated.", ConsoleColor.Black, ConsoleColor.Blue);
         }
 
+        static void preparePostQuotaDivision(result_managerContext db){
+            var divisions = db.Divisions.OrderByDescending(d=>d.Percentage).ToList();
+            var postQuotas = db.PostQuota.OrderBy(k=>k.PostName).ThenBy(t=>t.QuotaName).ToList();
+            foreach (var postQuota in postQuotas)
+            {
+                var decimalQuantity = postQuota.DecimalQuantity;
+                foreach (var division in divisions)
+                {
+                    var percentage = division.Percentage;
+                    var d = (double) percentage/100;
+                    var q = (double) d*decimalQuantity;
+                    var newPostQuotaDivision = new PostQuotaDivision();
+                    newPostQuotaDivision.PostName = postQuota.PostName;
+                    newPostQuotaDivision.QuotaName = postQuota.QuotaName;
+                    newPostQuotaDivision.DivisionName = division.Name;
+                    newPostQuotaDivision.DecimalQuantity = q;
+                    db.PostQuotaDivision.Add(newPostQuotaDivision);
+                    db.SaveChanges();
+                }
+            }
+        }
 
         #endregion
     }
