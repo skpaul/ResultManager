@@ -17,7 +17,6 @@ namespace ResultManager.Models
 
         public virtual DbSet<Applicants> Applicants { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
-        public virtual DbSet<DivDistThana> DivDistThana { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
         public virtual DbSet<PostCalculation> PostCalculation { get; set; }
         public virtual DbSet<PostQuotaDistribution> PostQuotaDistribution { get; set; }
@@ -71,33 +70,6 @@ namespace ResultManager.Models
                 entity.Property(e => e.Percentage)
                     .HasColumnName("percentage")
                     .HasColumnType("double(5,2)");
-            });
-
-            modelBuilder.Entity<DivDistThana>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("div_dist_thana");
-
-                entity.Property(e => e.DistName)
-                    .HasColumnName("dist_name")
-                    .HasMaxLength(16)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.DivName)
-                    .HasColumnName("div_name")
-                    .HasMaxLength(10)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.Sl)
-                    .HasColumnName("sl")
-                    .HasMaxLength(3)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.Thana)
-                    .HasColumnName("thana")
-                    .HasMaxLength(25)
-                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<Divisions>(entity =>
@@ -200,7 +172,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
-                    .HasColumnType("float(5,2)");
+                    .HasColumnType("double(5,2)");
 
                 entity.Property(e => e.PostName)
                     .IsRequired()
@@ -214,7 +186,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
-                    .HasColumnType("float(5,2)");
+                    .HasColumnType("double(5,2)");
             });
 
             modelBuilder.Entity<Posts>(entity =>
@@ -239,7 +211,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.TotalQuotaQuantity)
                     .HasColumnName("totalQuotaQuantity")
-                    .HasColumnType("int(11)");
+                    .HasColumnType("double(5,2)");
 
                 entity.Property(e => e.Vacancies)
                     .HasColumnName("vacancies")
@@ -261,7 +233,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.Percentage)
                     .HasColumnName("percentage")
-                    .HasColumnType("float(5,2)");
+                    .HasColumnType("double(5,2)");
 
                 entity.Property(e => e.Priority)
                     .HasColumnName("priority")

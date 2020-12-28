@@ -9,6 +9,6 @@ namespace ResultManager.Models
         public string PostName { get; set; }
         public int Vacancies { get; set; }
         public double TotalQuotaPercentage { get; set; }
-        public int TotalQuotaQuantity { get; set; }
+        public double TotalQuotaQuantity { get; set; }
     }
 }

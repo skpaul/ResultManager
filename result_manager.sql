@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 28, 2020 at 02:29 PM
+-- Generation Time: Dec 28, 2020 at 03:00 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -152,7 +152,7 @@ CREATE TABLE `posts` (
   `postName` varchar(200) NOT NULL,
   `vacancies` int(11) NOT NULL,
   `totalQuotaPercentage` double(5,2) NOT NULL,
-  `totalQuotaQuantity` int(11) NOT NULL
+  `totalQuotaQuantity` double(5,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -160,15 +160,15 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`postId`, `postName`, `vacancies`, `totalQuotaPercentage`, `totalQuotaQuantity`) VALUES
-(1, 'Auditor', 10, 0.00, 0),
-(2, 'Cash Sarker', 1, 0.00, 0),
-(3, 'Driver', 2, 0.00, 0),
-(4, 'Office Assistant cum Computer Typist', 8, 0.00, 0),
-(5, 'Office Sohayok', 9, 0.00, 0),
-(6, 'Photocopy Operator', 1, 0.00, 0),
-(7, 'Record Keeper', 3, 0.00, 0),
-(8, 'Security Guard', 1, 0.00, 0),
-(9, 'Stenographer cum Computer Operator', 3, 0.00, 0);
+(1, 'Auditor', 10, 0.00, 0.00),
+(2, 'Cash Sarker', 1, 0.00, 0.00),
+(3, 'Driver', 2, 0.00, 0.00),
+(4, 'Office Assistant cum Computer Typist', 8, 0.00, 0.00),
+(5, 'Office Sohayok', 9, 0.00, 0.00),
+(6, 'Photocopy Operator', 1, 0.00, 3.00),
+(7, 'Record Keeper', 3, 0.00, 0.00),
+(8, 'Security Guard', 1, 0.00, 0.00),
+(9, 'Stenographer cum Computer Operator', 3, 0.00, 0.00);
 
 -- --------------------------------------------------------
 
@@ -222,8 +222,8 @@ CREATE TABLE `post_quota_distribution` (
   `id` int(11) NOT NULL,
   `postName` varchar(200) NOT NULL,
   `quotaName` varchar(200) NOT NULL,
-  `decimalQuantity` float(5,2) NOT NULL,
-  `roundedQuantity` float(5,2) NOT NULL,
+  `decimalQuantity` double(5,2) NOT NULL,
+  `roundedQuantity` double(5,2) NOT NULL,
   `applicantFound` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -236,7 +236,7 @@ CREATE TABLE `post_quota_distribution` (
 CREATE TABLE `quotas` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `percentage` float(5,2) NOT NULL,
+  `percentage` double(5,2) NOT NULL,
   `priority` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

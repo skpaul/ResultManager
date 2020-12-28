@@ -21,28 +21,66 @@ namespace ResultManager
     {
         static void Main(string[] args)
         {
-            double f = 10.51;
-            var r = Math.Round(f);
-            Console.WriteLine(r);
-
+         
+           
             var db = new result_managerContext();
             
             try
             {
-                
+                resetPostTable(db);
+                preparePosts(db);
+
+                truncatePostQuotaDistribution(db);
             }
             catch (System.Exception exp)
             {
-                
-                Console.WriteLine(exp.InnerException.Message);
+                write($"Message- {exp.Message}", ConsoleColor.Black, ConsoleColor.Red);
+                write($"Message- {exp.InnerException.Message}", ConsoleColor.Black, ConsoleColor.Red);
             }
-              //Mymensingh
-
-
-        //     calculatePost(db);
-        //     pickDistQuota(db);
-        //     Console.WriteLine("success");
-        //     Console.ReadLine();
         }
+
+        static void write(string message, ConsoleColor background=ConsoleColor.Black, ConsoleColor foreground = ConsoleColor.White){
+             Console.BackgroundColor = background;
+            Console.ForegroundColor = foreground;
+            Console.WriteLine(message);
+            System.Threading.Thread.Sleep(300);
+        }
+
+        //reset posts table
+        static void resetPostTable(result_managerContext db){
+            var commandText = "update posts set totalQuotaPercentage=0.00, totalQuotaQuantity=0";
+            db.Database.ExecuteSqlRaw(commandText);
+            write("Posts table has been reset.", ConsoleColor.Black, ConsoleColor.Blue);
+        }
+
+        //This method breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity.
+        static void preparePosts(result_managerContext db){
+            Console.WriteLine("breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity ... ");
+            var quotaTotal = db.Quotas.Sum(s=>s.Percentage);
+            write("Total quota - " + quotaTotal);
+
+            write("Reading posts ...");
+            var posts = db.Posts.OrderBy(o=>o.PostName).ToList();
+            foreach (var post in posts)
+            {
+                write($"Current post name-{post.PostName}");
+                post.TotalQuotaPercentage = quotaTotal;
+                double d = (double)quotaTotal/100;
+                double v = (double) d* post.Vacancies;
+                double quantity = v;
+                post.TotalQuotaQuantity = Math.Round(v);
+                write($"Total quota quantity-{quantity}");
+            }
+
+            db.SaveChanges();
+        }
+
+        #region Post quota distribution
+         static void truncatePostQuotaDistribution(result_managerContext db){
+            var commandText = "TRUNCATE TABLE post_quota_distribution";
+            db.Database.ExecuteSqlRaw(commandText);
+            write("post_quota_distribution table has been TRUNCATED.", ConsoleColor.Black, ConsoleColor.Blue);
+        }
+        #endregion
     }
 }
