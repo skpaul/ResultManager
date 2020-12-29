@@ -7,7 +7,7 @@ namespace ResultManager.Models
     {
         public int Id { get; set; }
         public string UserId { get; set; }
-        public int? Roll { get; set; }
+        public string Roll { get; set; }
         public int? PostCode { get; set; }
         public string PostName { get; set; }
         public string Name { get; set; }
@@ -17,5 +17,6 @@ namespace ResultManager.Models
         public string Ffq { get; set; }
         public string PresentDistrict { get; set; }
         public string PermanentDistrict { get; set; }
+        public bool IsSelected { get; set; }
     }
 }

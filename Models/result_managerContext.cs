@@ -18,6 +18,7 @@ namespace ResultManager.Models
         public virtual DbSet<Applicants> Applicants { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
+        public virtual DbSet<Marks> Marks { get; set; }
         public virtual DbSet<PostQuota> PostQuota { get; set; }
         public virtual DbSet<PostQuotaDivision> PostQuotaDivision { get; set; }
         public virtual DbSet<PostQuotaDivisionDistrict> PostQuotaDivisionDistrict { get; set; }
@@ -28,6 +29,7 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -51,6 +53,8 @@ namespace ResultManager.Models
                     .HasColumnName("ffq")
                     .HasMaxLength(30)
                     .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.IsSelected).HasColumnName("isSelected");
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
@@ -84,7 +88,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.Roll)
                     .HasColumnName("roll")
-                    .HasColumnType("int(8)")
+                    .HasMaxLength(200)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Sex)
@@ -139,6 +143,32 @@ namespace ResultManager.Models
                     .HasColumnType("double(5,2)");
             });
 
+            modelBuilder.Entity<Marks>(entity =>
+            {
+                entity.ToTable("marks");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Roll)
+                    .IsRequired()
+                    .HasColumnName("roll")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Total)
+                    .HasColumnName("total")
+                    .HasColumnType("double(4,2)");
+
+                entity.Property(e => e.Viva)
+                    .HasColumnName("viva")
+                    .HasColumnType("double(4,2)");
+
+                entity.Property(e => e.Written)
+                    .HasColumnName("written")
+                    .HasColumnType("double(4,2)");
+            });
+
             modelBuilder.Entity<PostQuota>(entity =>
             {
                 entity.ToTable("post_quota");
@@ -180,7 +210,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
-                    .HasColumnType("double(12,9)");
+                    .HasColumnType("double(12,10)");
 
                 entity.Property(e => e.DivisionName)
                     .IsRequired()
@@ -208,7 +238,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,10)");
 
                 entity.Property(e => e.DistrictName)
                     .IsRequired()

@@ -29,7 +29,7 @@ namespace ResultManager
             Console.ResetColor();
             Console.WriteLine();
             Console.WriteLine();
-             Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine("Press any key to continue ...");
             Console.ResetColor();
             Console.ReadLine();
@@ -46,6 +46,8 @@ namespace ResultManager
                 // truncatePostQuotaDivision(db);
                 // preparePostQuotaDivision(db);
 
+                preparePostQuotaDivisionDistrict(db);
+                prepareMarks(db);
                 Console.WriteLine("Success");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
@@ -54,6 +56,7 @@ namespace ResultManager
             {
                 writeLine($"Message- {exp.Message}", ConsoleColor.Black, ConsoleColor.Red);
                 writeLine($"Message- {exp.InnerException.Message}", ConsoleColor.Black, ConsoleColor.Red);
+                Console.WriteLine(exp.StackTrace);
             }
         }
 
@@ -205,6 +208,68 @@ namespace ResultManager
             }
         }
 
+        static void preparePostQuotaDivisionDistrict(result_managerContext db){
+
+            var commandText = "TRUNCATE TABLE post_quota_division_district";
+            db.Database.ExecuteSqlRaw(commandText);
+            writeLine("post_quota_division_district has been truncated.", ConsoleColor.Black, ConsoleColor.Blue);
+
+            
+            var postQuotaDivisions = db.PostQuotaDivision.OrderBy(k=>k.PostName).ThenBy(t=>t.QuotaName).ThenBy(k=>k.DivisionName).ToList();
+            foreach (var postQuotaDivision in postQuotaDivisions)
+            {
+                var districts = db.Districts.Where(d=>d.Division == postQuotaDivision.DivisionName).OrderByDescending(k=>k.Percentage).ToList();
+
+                var decimalQuantity = postQuotaDivision.DecimalQuantity;
+                foreach (var district in districts)
+                {
+                    var percentage = district.Percentage;
+                    var d = (double) percentage/100;
+                    var q = (double) d*decimalQuantity;
+                    var newPostQuotaDivisionDistrict = new PostQuotaDivisionDistrict()
+                    {
+                        PostName = postQuotaDivision.PostName,
+                        QuotaName = postQuotaDivision.QuotaName,
+                        DivisionName = postQuotaDivision.DivisionName,
+                        DistrictName = district.Name,
+                        DecimalQuantity = q
+                    };
+                    db.PostQuotaDivisionDistrict.Add(newPostQuotaDivisionDistrict);
+                }
+
+                db.SaveChanges();
+            }
+        }
+
+        #endregion
+
+        #region Temporary
+        static void prepareMarks(result_managerContext db){
+        
+            Console.WriteLine("Preparing marks ....");
+            var commandText = "TRUNCATE TABLE marks";
+            db.Database.ExecuteSqlRaw(commandText);
+            var applicants = db.Applicants.ToList();
+            foreach (var applicant in applicants)
+            {
+                Random written = new Random();
+                Random viva = new Random();
+                var mark = new Marks()
+                {
+                    Roll= applicant.Roll,
+                    Written = written.Next(1,100),
+                    Viva = viva.Next(1,100)
+                    
+                };
+                
+                mark.Total = mark.Written + mark.Viva;
+                db.Marks.Add(mark);
+            }
+
+            db.SaveChanges();
+
+            Console.WriteLine("Marks input completed");
+        }
         #endregion
     }
 
