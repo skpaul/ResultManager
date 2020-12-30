@@ -43,8 +43,14 @@ namespace ResultManager
                 //  resetPostTable(db);
                 // preparePosts(db);
                 
-                 truncatePostQuota(db);
-                preparePostQuota(db);
+                // truncatePostQuota(db);
+                // preparePostQuota(db);
+
+                // truncateDivisionQuota(db); 
+                // prepareDivisionQuota(db);
+
+                truncateDistrictQuota(db); 
+                prepareDistrictQuota(db);
 
 
                 // truncatePostQuotaDivision(db);
@@ -296,10 +302,338 @@ namespace ResultManager
 
             }
 
-            writeLine("Post Quota Distribution done.");
+            typewritter("Post Quota Distribution done.");
+            Console.WriteLine();
 
         }
         #endregion
+
+        #region Division Quoa
+        static void truncateDivisionQuota(result_managerContext db)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Red;
+            typewritter("TRUNCATING division_quota...");
+            Thread.Sleep(1000);
+            var commandText = "TRUNCATE TABLE division_quota";
+            db.Database.ExecuteSqlRaw(commandText);
+            Console.Write("\t");
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("success");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        static void prepareDivisionQuota(result_managerContext db){
+           string str = "";
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            typewritter("Preparing division quota...");
+            Thread.Sleep(1000); Console.ResetColor(); 
+            var vacancies = db.Posts.Sum(k=>k.Vacancies);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            typewritter($"Total vacancies-{vacancies}");
+            Console.ResetColor(); 
+            Console.WriteLine();
+            var divisions = db.Divisions.OrderByDescending(k=>k.Percentage).ToList();
+            var divisionCount = divisions.Count();
+
+            int total = 0;
+            var loopCount = 1;
+            foreach (var division in divisions)
+            {
+                double decimalQuantity = ((double)division.Percentage / 100) * vacancies;
+
+                int rounded = 0;
+                 if (loopCount < divisionCount)
+                    {
+                        loopCount++;
+                        double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
+                        //condition 1 --->
+                        if (fraction > 0.5)
+                        {
+                            rounded = (int)Math.Ceiling(decimalQuantity);
+                            if (total + rounded <= vacancies)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                rounded = (int)Math.Floor(decimalQuantity);
+                                if (total + rounded <= vacancies)
+                                {
+                                    total = total + rounded;
+                                }
+                                else
+                                {
+                                    var remaining = vacancies - total;
+                                    rounded = (int)remaining;
+                                    total = total + rounded;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            rounded = (int)Math.Floor(decimalQuantity);
+                            if (total + rounded <= vacancies)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                var remaining = vacancies - total;
+                                rounded = (int)remaining;
+                                total = total + rounded;
+                            }
+                        }
+                        //condition 1 <---
+                    }
+                    else
+                    {
+                        var remaining = vacancies - total;
+                        rounded = (int)remaining;
+                        total = total + rounded;
+                    } 
+               
+                var divisionQuota = new DivisionQuota();
+                divisionQuota.DivisionName = division.Name;
+                divisionQuota.DecimalQuantity = decimalQuantity;
+                divisionQuota.RoundedQuantity = rounded;
+                db.DivisionQuota.Add(divisionQuota);
+               
+               db.SaveChanges();
+                    Console.Write("\t");
+                    str = $"-> {division.Name} ({division.Percentage}%)";
+                    typewritter(str);
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    str = $" Post Allocated - {divisionQuota.RoundedQuantity}";
+                    typewritter(str);
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    Thread.Sleep(1000);
+            }
+
+                Console.Write("\t");
+                for (int i = 0; i < 40; i++)
+                {
+                    Console.Write("-"); Thread.Sleep(50);
+                }
+                Console.WriteLine();
+                Console.Write("\t");
+                str = $"Total Allocation - {total}";
+                typewritter(str);
+                Console.WriteLine();
+                Console.WriteLine();
+                Thread.Sleep(2000);
+
+            typewritter("Division Quota Distribution done.");
+            Console.WriteLine();
+
+        }
+        #endregion
+
+
+        #region District Quoa
+        static void truncateDistrictQuota(result_managerContext db)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Red;
+            typewritter("TRUNCATING district_quota...");
+            Thread.Sleep(1000);
+            var commandText = "TRUNCATE TABLE district_quota";
+            db.Database.ExecuteSqlRaw(commandText);
+            Console.Write("\t");
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("success");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        static void prepareDistrictQuotaOld(result_managerContext db){
+           string str = "";
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            typewritter("Preparing district quota...");
+            Thread.Sleep(1000); Console.ResetColor(); 
+            var vacancies = db.Posts.Sum(k=>k.Vacancies);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            typewritter($"Total vacancies-{vacancies}");
+            Console.ResetColor(); 
+            Console.WriteLine();
+            var districts = db.Districts.OrderByDescending(k=>k.Percentage).ToList();
+            var districtCount = districts.Count();
+
+            int total = 0;
+            var loopCount = 1;
+            foreach (var district in districts)
+            {
+                double decimalQuantity = ((double)district.Percentage / 100) * vacancies;
+
+                int rounded = 0;
+                 if (loopCount < districtCount)
+                    {
+                        loopCount++;
+                        double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
+                        //condition 1 --->
+                        if (fraction > 0.5)
+                        {
+                            rounded = (int)Math.Ceiling(decimalQuantity);
+                            if (total + rounded <= vacancies)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                rounded = (int)Math.Floor(decimalQuantity);
+                                if (total + rounded <= vacancies)
+                                {
+                                    total = total + rounded;
+                                }
+                                else
+                                {
+                                    var remaining = vacancies - total;
+                                    rounded = (int)remaining;
+                                    total = total + rounded;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            rounded = (int)Math.Floor(decimalQuantity);
+                            if (total + rounded <= vacancies)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                var remaining = vacancies - total;
+                                rounded = (int)remaining;
+                                total = total + rounded;
+                            }
+                        }
+                        //condition 1 <---
+                    }
+                    else
+                    {
+                        var remaining = vacancies - total;
+                        rounded = (int)remaining;
+                        total = total + rounded;
+                    } 
+               
+                var districtQuota = new DistrictQuota(){
+                    DistrictName = district.Name,
+                    DecimalQuantity = decimalQuantity,
+                    RoundedQuantity = rounded
+                };
+               
+                db.DistrictQuota.Add(districtQuota);
+               
+               db.SaveChanges();
+                    Console.Write("\t");
+                    str = $"-> {district.Name} ({district.Percentage}%)";
+                    typewritter(str);
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    str = $" Post Allocated - {districtQuota.RoundedQuantity}";
+                    typewritter(str);
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    Thread.Sleep(500);
+            }
+
+                Console.Write("\t");
+                for (int i = 0; i < 40; i++)
+                {
+                    Console.Write("-"); Thread.Sleep(50);
+                }
+                Console.WriteLine();
+                Console.Write("\t");
+                str = $"Total Allocation - {total}";
+                typewritter(str);
+                Console.WriteLine();
+                Console.WriteLine();
+                Thread.Sleep(2000);
+
+            typewritter("Division Quota Distribution done.");
+            Console.WriteLine();
+
+        }
+        
+         static void prepareDistrictQuota(result_managerContext db){
+            string str = "";
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            typewritter("Preparing district quota...");
+            Thread.Sleep(1000); Console.ResetColor(); 
+            var vacancies = db.Posts.Sum(k=>k.Vacancies);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            typewritter($"Total vacancies-{vacancies}");
+            Console.ResetColor(); 
+            Console.WriteLine();
+            var districts = db.Districts.OrderByDescending(k=>k.Percentage).ToList();
+
+            int total = 0;
+            foreach (var district in districts)
+            {
+                double decimalQuantity = ((double)district.Percentage / 100) * vacancies;
+               
+                 int rounded = 0;
+                if (decimalQuantity < 1)
+                {
+                    var fraction = decimalQuantity - Math.Truncate(decimalQuantity);
+                    if (fraction < 0.5)
+                    {
+                        rounded = (int)Math.Ceiling(decimalQuantity);
+                    }
+                    else
+                    {
+                        rounded = (int)Math.Round(decimalQuantity);
+                    }
+                }
+                else
+                {
+                    rounded = (int) Math.Round(decimalQuantity);
+                }
+               
+       
+               total += rounded;
+                var districtQuota = new DistrictQuota(){
+                    DistrictName = district.Name,
+                    DecimalQuantity = decimalQuantity,
+                    RoundedQuantity = rounded
+                };
+               
+                db.DistrictQuota.Add(districtQuota);
+               
+               db.SaveChanges();
+                    Console.Write("\t");
+                    str = $"-> {district.Name} ({district.Percentage}%)";
+                    typewritter(str);
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    str = $" Post Allocated - {districtQuota.RoundedQuantity} (fraction value-{decimalQuantity.ToString("N2")})";
+                    typewritter(str, 20);
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    Thread.Sleep(200);
+            }
+
+                Console.Write("\t");
+                for (int i = 0; i < 40; i++)
+                {
+                    Console.Write("-"); Thread.Sleep(50);
+                }
+                Console.WriteLine();
+                Console.Write("\t");
+                str = $"Total Allocation - {total}";
+                typewritter(str);
+                Console.WriteLine();
+                Console.WriteLine();
+                Thread.Sleep(2000);
+
+            typewritter("Division Quota Distribution done.");
+            Console.WriteLine();
+
+        }
+        #endregion
+
 
         #region Post Quota Division
         static void truncatePostQuotaDivision(result_managerContext db)
@@ -421,13 +755,13 @@ namespace ResultManager
         }
         #endregion
 
-        static void typewritter(string str)
+        static void typewritter(string str, int sleep = 100)
         {
             char[] chars = str.ToCharArray();
             for (int i = 0; i < chars.Length; i++)
             {
                 Console.Write(chars[i]);
-                Thread.Sleep(80);
+                Thread.Sleep(sleep);
             }
         }
     }

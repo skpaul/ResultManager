@@ -16,7 +16,9 @@ namespace ResultManager.Models
         }
 
         public virtual DbSet<Applicants> Applicants { get; set; }
+        public virtual DbSet<DistrictQuota> DistrictQuota { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
+        public virtual DbSet<DivisionQuota> DivisionQuota { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
         public virtual DbSet<Marks> Marks { get; set; }
         public virtual DbSet<PostQuota> PostQuota { get; set; }
@@ -29,6 +31,7 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -105,6 +108,36 @@ namespace ResultManager.Models
                     .HasDefaultValueSql("'NULL'");
             });
 
+            modelBuilder.Entity<DistrictQuota>(entity =>
+            {
+                entity.ToTable("district_quota");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DecimalQuantity)
+                    .HasColumnName("decimalQuantity")
+                    .HasColumnType("double(12,10)");
+
+                entity.Property(e => e.DistrictName)
+                    .IsRequired()
+                    .HasColumnName("districtName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.FoundQuantity)
+                    .HasColumnName("foundQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.NotFoundQuantity)
+                    .HasColumnName("notFoundQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.RoundedQuantity)
+                    .HasColumnName("roundedQuantity")
+                    .HasColumnType("int(11)");
+            });
+
             modelBuilder.Entity<Districts>(entity =>
             {
                 entity.ToTable("districts");
@@ -126,6 +159,36 @@ namespace ResultManager.Models
                 entity.Property(e => e.Percentage)
                     .HasColumnName("percentage")
                     .HasColumnType("double(12,10)");
+            });
+
+            modelBuilder.Entity<DivisionQuota>(entity =>
+            {
+                entity.ToTable("division_quota");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DecimalQuantity)
+                    .HasColumnName("decimalQuantity")
+                    .HasColumnType("double(12,10)");
+
+                entity.Property(e => e.DivisionName)
+                    .IsRequired()
+                    .HasColumnName("divisionName")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.FoundQuantity)
+                    .HasColumnName("foundQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.NotFoundQuantity)
+                    .HasColumnName("notFoundQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.RoundedQuantity)
+                    .HasColumnName("roundedQuantity")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Divisions>(entity =>
