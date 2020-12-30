@@ -11,5 +11,6 @@ namespace ResultManager.Models
         public double DecimalQuantity { get; set; }
         public double RoundedQuantity { get; set; }
         public int ApplicantFound { get; set; }
+        public int ApplicantTransferredToGeneral { get; set; }
     }
 }

@@ -18,5 +18,6 @@ namespace ResultManager.Models
         public string PresentDistrict { get; set; }
         public string PermanentDistrict { get; set; }
         public bool IsSelected { get; set; }
+        public int SelectionRank { get; set; }
     }
 }

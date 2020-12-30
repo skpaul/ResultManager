@@ -7,8 +7,12 @@ namespace ResultManager.Models
     {
         public int PostId { get; set; }
         public string PostName { get; set; }
+        public bool IsEligibleForQuota { get; set; }
         public int Vacancies { get; set; }
         public double TotalQuotaPercentage { get; set; }
-        public double TotalQuotaQuantity { get; set; }
+        public double MaximumQuotaQuantity { get; set; }
+        public int QuotaFoundQuantity { get; set; }
+        public int GeneralQuantity { get; set; }
+        public int GeneralFoundQuantity { get; set; }
     }
 }

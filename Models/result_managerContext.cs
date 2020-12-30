@@ -29,7 +29,6 @@ namespace ResultManager.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySQL("server=localhost;userid=root;password=;database=result_manager;");
             }
         }
@@ -91,6 +90,10 @@ namespace ResultManager.Models
                     .HasMaxLength(200)
                     .HasDefaultValueSql("'NULL'");
 
+                entity.Property(e => e.SelectionRank)
+                    .HasColumnName("selectionRank")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.Sex)
                     .HasColumnName("sex")
                     .HasColumnType("int(1)")
@@ -122,7 +125,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.Percentage)
                     .HasColumnName("percentage")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,10)");
             });
 
             modelBuilder.Entity<Divisions>(entity =>
@@ -140,7 +143,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.Percentage)
                     .HasColumnName("percentage")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,10)");
             });
 
             modelBuilder.Entity<Marks>(entity =>
@@ -181,9 +184,13 @@ namespace ResultManager.Models
                     .HasColumnName("applicantFound")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.ApplicantTransferredToGeneral)
+                    .HasColumnName("applicantTransferredToGeneral")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,10)");
 
                 entity.Property(e => e.PostName)
                     .IsRequired()
@@ -217,6 +224,10 @@ namespace ResultManager.Models
                     .HasColumnName("divisionName")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.FoundQuantity)
+                    .HasColumnName("foundQuantity")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.PostName)
                     .IsRequired()
                     .HasColumnName("postName")
@@ -226,6 +237,10 @@ namespace ResultManager.Models
                     .IsRequired()
                     .HasColumnName("quotaName")
                     .HasMaxLength(200);
+
+                entity.Property(e => e.RoundedQuantiy)
+                    .HasColumnName("roundedQuantiy")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<PostQuotaDivisionDistrict>(entity =>
@@ -250,6 +265,10 @@ namespace ResultManager.Models
                     .HasColumnName("divisionName")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.FoundQuantity)
+                    .HasColumnName("foundQuantity")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.PostName)
                     .IsRequired()
                     .HasColumnName("postName")
@@ -259,6 +278,10 @@ namespace ResultManager.Models
                     .IsRequired()
                     .HasColumnName("quotaName")
                     .HasMaxLength(200);
+
+                entity.Property(e => e.RoundedQuantiy)
+                    .HasColumnName("roundedQuantiy")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Posts>(entity =>
@@ -272,18 +295,32 @@ namespace ResultManager.Models
                     .HasColumnName("postId")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.GeneralFoundQuantity)
+                    .HasColumnName("generalFoundQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.GeneralQuantity)
+                    .HasColumnName("generalQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.IsEligibleForQuota).HasColumnName("isEligibleForQuota");
+
+                entity.Property(e => e.MaximumQuotaQuantity)
+                    .HasColumnName("maximumQuotaQuantity")
+                    .HasColumnType("double(12,10)");
+
                 entity.Property(e => e.PostName)
                     .IsRequired()
                     .HasColumnName("postName")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.QuotaFoundQuantity)
+                    .HasColumnName("quotaFoundQuantity")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.TotalQuotaPercentage)
                     .HasColumnName("totalQuotaPercentage")
-                    .HasColumnType("double(5,2)");
-
-                entity.Property(e => e.TotalQuotaQuantity)
-                    .HasColumnName("totalQuotaQuantity")
-                    .HasColumnType("double(5,2)");
+                    .HasColumnType("double(12,10)");
 
                 entity.Property(e => e.Vacancies)
                     .HasColumnName("vacancies")

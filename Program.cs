@@ -32,25 +32,35 @@ namespace ResultManager
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine("Press any key to continue ...");
             Console.ResetColor();
-            Console.ReadLine();
+            // Console.ReadLine();
 
             var db = new result_managerContext();
             
             try
             {
-                resetPostTable(db);
-                preparePosts(db);
+                // resetApplicantTable(db);
+                //  resetPostTable(db);
+                // preparePosts(db);
+                
                  truncatePostQuota(db);
-                // preparePostQuota(db);
+                preparePostQuota(db);
+
 
                 // truncatePostQuotaDivision(db);
                 // preparePostQuotaDivision(db);
 
-                preparePostQuotaDivisionDistrict(db);
-                prepareMarks(db);
-                Console.WriteLine("Success");
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadLine();
+                // preparePostQuotaDivisionDistrict(db);
+                // prepareMarks(db);
+
+                // selectFreedomFighters(db);
+
+                //  var floatNumber = 12.5523;
+
+                //     var x = floatNumber - Math.Truncate(floatNumber);
+                //     Console.WriteLine(x);
+                Console.WriteLine("Data mining completed.");
+                // Console.WriteLine("Press any key to exit...");
+                // Console.ReadLine();
             }
             catch (System.Exception exp)
             {
@@ -85,13 +95,31 @@ namespace ResultManager
             System.Threading.Thread.Sleep(300);
         }
 
+        #region applicants table
+        /// <summary>Resets all isSelected=0 in applicant table.</summary>
+        static void resetApplicantTable(result_managerContext db){
+             Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("Resetting applicants table...");
+            Thread.Sleep(300);
+            var commandText = "update applicants set isSelected=0, selectionRank=0";
+            db.Database.ExecuteSqlRaw(commandText);
+            Console.Write("\t");
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+
+            Console.Write("success");
+            Console.ResetColor();
+            Console.WriteLine("");
+            Console.WriteLine("");
+        }
+        #endregion
 
         //reset posts table
         static void resetPostTable(result_managerContext db){
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("Resetting post table...");
             Thread.Sleep(300);
-            var commandText = "update posts set totalQuotaPercentage=0.00, totalQuotaQuantity=0";
+            var commandText = "update posts set totalQuotaPercentage=0, maximumQuotaQuantity=0, quotaFoundQuantity=0, generalQuantity=0, generalFoundQuantity=0";
             db.Database.ExecuteSqlRaw(commandText);
             Console.Write("\t\t");
             Console.BackgroundColor = ConsoleColor.Green;
@@ -112,22 +140,31 @@ namespace ResultManager
             var posts = db.Posts.OrderBy(o=>o.PostName).ToList();
             foreach (var post in posts)
             {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write($"\t{post.PostName}-");
-                Console.ForegroundColor = ConsoleColor.Cyan;              
-                Console.Write($" Vacancy-{post.Vacancies}");
+               
                 post.TotalQuotaPercentage = quotaTotal;
                 double d = (double)quotaTotal/100;
                 double v = (double) d* post.Vacancies;
                 double quantity = v;
-                post.TotalQuotaQuantity = Math.Round(v);
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.Write($" Quota-{quantity}");
-                Console.WriteLine();
-                Thread.Sleep(200);
-            }
+                post.MaximumQuotaQuantity = Math.Round(v);
+                post.GeneralQuantity  = post.Vacancies - (int) post.MaximumQuotaQuantity;
+                db.SaveChanges();
 
-            db.SaveChanges();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"\t{post.PostName}-");
+                Console.ForegroundColor = ConsoleColor.Cyan;              
+                Console.Write($" Vacancy-{post.Vacancies}");
+
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Write($" Quota-{post.MaximumQuotaQuantity}");
+                 Console.ForegroundColor = ConsoleColor.Magenta;              
+                Console.Write($" General-{post.GeneralQuantity}");
+                Console.WriteLine();
+                Thread.Sleep(2000);
+            }
+            Console.WriteLine();
+            Console.ResetColor();
+            Console.WriteLine();
+            
         }
 
         #region Post quota
@@ -135,7 +172,7 @@ namespace ResultManager
             Console.WriteLine(); 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("TRUNCATING post quotas...");
-            Thread.Sleep(300);
+            Thread.Sleep(2000);
             var commandText = "TRUNCATE TABLE post_quota";
             db.Database.ExecuteSqlRaw(commandText);
              Console.Write("\t");
@@ -147,30 +184,107 @@ namespace ResultManager
         }
 
         static void preparePostQuota(result_managerContext db){
-            writeLine("Preparing post quota ...", ConsoleColor.DarkGreen, ConsoleColor.Black);
-            
+           
+           
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write("Preparing post quota...");
+            Thread.Sleep(1000); Console.ResetColor(); Console.WriteLine();
             var quotas = db.Quotas.OrderBy(o=>o.Priority).ToList();
-            var posts = db.Posts.ToList();
+            var quotaCount = quotas.Count();
+            var posts = db.Posts.Where(k=>k.IsEligibleForQuota == true).ToList();
 
             foreach (var post in posts)
             {
-                Console.WriteLine($"Post name-{post.PostName}, \tVacancy-{post.Vacancies},\tMax Quantity- {post.TotalQuotaQuantity}");
-                var maxQuantityFromQuota = post.TotalQuotaQuantity;
-                var vacancy = post.Vacancies;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("\t");
+                Console.Write($"{post.PostName}");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.Write($" Vacancy-{post.Vacancies}");
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write($" Max Quota- {post.MaximumQuotaQuantity}");
+                Console.ResetColor(); Console.WriteLine();
+               
+                int total = 0;
+                var loopCount = 1;
                 foreach (var quota in quotas)
                 {
                     string quotaName = quota.Name;
-                    double percentage = quota.Percentage;
-                    double d = (double) percentage/100;
-                    double c = d*vacancy;
-                    var newPostQuotaDist = new PostQuota();
-                    newPostQuotaDist.PostName = post.PostName;
-                    newPostQuotaDist.QuotaName = quota.Name;
-                    newPostQuotaDist.DecimalQuantity = c;
-                    db.PostQuota.Add(newPostQuotaDist);
-                    writeLine($"\t Quota- {quota.Name}, {c}");
+                    int rounded = 0;
+                    double decimalQuantity = ((double)quota.Percentage / 100) * post.Vacancies;
+                    if (loopCount < quotaCount)
+                    {
+                        loopCount++;
+                        double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
+                        //condition 1 --->
+                        if (fraction > 0.5)
+                        {
+                            rounded = (int)Math.Ceiling(decimalQuantity);
+                            if (total + rounded <= post.MaximumQuotaQuantity)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                rounded = (int)Math.Floor(decimalQuantity);
+                                if (total + rounded <= post.MaximumQuotaQuantity)
+                                {
+                                    total = total + rounded;
+                                }
+                                else
+                                {
+                                    var remaining = post.MaximumQuotaQuantity - total;
+                                    rounded = (int)remaining;
+                                    total = total + rounded;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            rounded = (int)Math.Floor(decimalQuantity);
+                            if (total + rounded <= post.MaximumQuotaQuantity)
+                            {
+                                total = total + rounded;
+                            }
+                            else
+                            {
+                                var remaining = post.MaximumQuotaQuantity - total;
+                                rounded = (int)remaining;
+                                total = total + rounded;
+                            }
+                        }
+                        //condition 1 <---
+                    }
+                    else
+                    {
+                        var remaining = post.MaximumQuotaQuantity - total;
+                        rounded = (int)remaining;
+                        total = total + rounded;
+                    }
+
+
+
+                    var newPostQuota = new PostQuota();
+                    newPostQuota.PostName = post.PostName;
+                    newPostQuota.QuotaName = quota.Name;
+                    newPostQuota.DecimalQuantity = decimalQuantity;
+                    newPostQuota.RoundedQuantity = rounded;
+                    db.PostQuota.Add(newPostQuota);
+                    // writeLine($"\t\t{quota.Name} ({quota.Percentage}%), Decimal-{decimalQuantity} Rounded-{Math.Round(decimalQuantity)}");
+
+                    db.SaveChanges();
+                    Thread.Sleep(2000);
                 }
-                db.SaveChanges();
+                Console.Write("\t\t");
+                for (int i = 0; i < 20; i++)
+                {
+                    Console.Write("-"); Thread.Sleep(50);
+                }
+                Console.WriteLine();
+                Console.WriteLine($"\t\tTotal - {total}");
+                Console.WriteLine();
+                Thread.Sleep(2000);
+
+
             }
 
             writeLine("Post Quota Distribution done.");
@@ -269,6 +383,32 @@ namespace ResultManager
             db.SaveChanges();
 
             Console.WriteLine("Marks input completed");
+        }
+        #endregion
+
+        #region applicant selection
+        static void selectFreedomFighters(result_managerContext db){
+            //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
+            var postQuota = (from c in db.PostQuota where c.DecimalQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && c.QuotaName=="Freedom Fighter" orderby c.Id select c).FirstOrDefault();
+            if(postQuota != null){
+                var postName = postQuota.PostName;
+                var applicant = (from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll join dist in db.Districts on a.PresentDistrict equals dist.Name join div in db.Divisions on dist.Division equals div.Name  where a.IsSelected==false && a.PostName== postName  && (a.Ffq=="Child of Freedom Fighter" || a.Ffq=="Grand Child of Freedom Fighter") orderby m.Total orderby div.Name orderby dist.Name descending select a).FirstOrDefault();
+
+                if(applicant != null){
+                    Console.WriteLine(applicant.Roll);
+                    applicant.IsSelected = true;
+                    postQuota.ApplicantFound++;
+                }
+                else{
+                    postQuota.ApplicantTransferredToGeneral++;
+                }
+
+                    db.SaveChanges();
+                    Thread.Sleep(1000);
+                    selectFreedomFighters(db);
+            }
+           
+            
         }
         #endregion
     }

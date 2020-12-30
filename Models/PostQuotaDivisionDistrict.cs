@@ -11,5 +11,7 @@ namespace ResultManager.Models
         public string DivisionName { get; set; }
         public string DistrictName { get; set; }
         public double DecimalQuantity { get; set; }
+        public int RoundedQuantiy { get; set; }
+        public int FoundQuantity { get; set; }
     }
 }
