@@ -30,8 +30,9 @@ namespace ResultManager
             Console.WriteLine();
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine("Press any key to continue ...");
+            typewritter("Press any key to continue ...");
             Console.ResetColor();
+            Console.WriteLine();
             // Console.ReadLine();
 
             var db = new result_managerContext();
@@ -99,7 +100,7 @@ namespace ResultManager
         /// <summary>Resets all isSelected=0 in applicant table.</summary>
         static void resetApplicantTable(result_managerContext db){
              Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("Resetting applicants table...");
+            typewritter("Resetting applicants table...");
             Thread.Sleep(300);
             var commandText = "update applicants set isSelected=0, selectionRank=0";
             db.Database.ExecuteSqlRaw(commandText);
@@ -117,7 +118,7 @@ namespace ResultManager
         //reset posts table
         static void resetPostTable(result_managerContext db){
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("Resetting post table...");
+            typewritter("Resetting post table...");
             Thread.Sleep(300);
             var commandText = "update posts set totalQuotaPercentage=0, maximumQuotaQuantity=0, quotaFoundQuantity=0, generalQuantity=0, generalFoundQuantity=0";
             db.Database.ExecuteSqlRaw(commandText);
@@ -134,7 +135,7 @@ namespace ResultManager
         //This method breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity.
         static void preparePosts(result_managerContext db){
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Preparing posts ... "); Console.ResetColor();
+            typewritter("Preparing posts ... "); Console.ResetColor(); Console.WriteLine();
             var quotaTotal = db.Quotas.Sum(s=>s.Percentage);
            
             var posts = db.Posts.OrderBy(o=>o.PostName).ToList();
@@ -171,8 +172,8 @@ namespace ResultManager
          static void truncatePostQuota(result_managerContext db){
             Console.WriteLine(); 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("TRUNCATING post quotas...");
-            Thread.Sleep(2000);
+            typewritter("TRUNCATING post quotas...");
+            Thread.Sleep(1000);
             var commandText = "TRUNCATE TABLE post_quota";
             db.Database.ExecuteSqlRaw(commandText);
              Console.Write("\t");
@@ -185,9 +186,9 @@ namespace ResultManager
 
         static void preparePostQuota(result_managerContext db){
            
-           
+            string str = "";
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.Write("Preparing post quota...");
+            typewritter("Preparing post quota...");
             Thread.Sleep(1000); Console.ResetColor(); Console.WriteLine();
             var quotas = db.Quotas.OrderBy(o=>o.Priority).ToList();
             var quotaCount = quotas.Count();
@@ -197,11 +198,11 @@ namespace ResultManager
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("\t");
-                Console.Write($"{post.PostName}");
+                typewritter($"{post.PostName}");
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.Write($" Vacancy-{post.Vacancies}");
+                typewritter($" Vacancy-{post.Vacancies}");
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.Write($" Max Quota- {post.MaximumQuotaQuantity}");
+                typewritter($" Max Quota- {post.MaximumQuotaQuantity}");
                 Console.ResetColor(); Console.WriteLine();
                
                 int total = 0;
@@ -261,26 +262,34 @@ namespace ResultManager
                         total = total + rounded;
                     }
 
-
-
                     var newPostQuota = new PostQuota();
                     newPostQuota.PostName = post.PostName;
                     newPostQuota.QuotaName = quota.Name;
                     newPostQuota.DecimalQuantity = decimalQuantity;
                     newPostQuota.RoundedQuantity = rounded;
                     db.PostQuota.Add(newPostQuota);
-                    // writeLine($"\t\t{quota.Name} ({quota.Percentage}%), Decimal-{decimalQuantity} Rounded-{Math.Round(decimalQuantity)}");
 
                     db.SaveChanges();
-                    Thread.Sleep(2000);
+                    Console.Write("\t\t");
+                    str = $"-> {quota.Name} ({quota.Percentage}%)";
+                    typewritter(str);
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    str = $" Post Allocated - {newPostQuota.RoundedQuantity}";
+                    typewritter(str);
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    Thread.Sleep(1000);
                 }
                 Console.Write("\t\t");
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 30; i++)
                 {
                     Console.Write("-"); Thread.Sleep(50);
                 }
                 Console.WriteLine();
-                Console.WriteLine($"\t\tTotal - {total}");
+                Console.Write("\t\t");
+                str = $"Total Allocation - {total}";
+                typewritter(str);
+                Console.WriteLine();
                 Console.WriteLine();
                 Thread.Sleep(2000);
 
@@ -411,6 +420,16 @@ namespace ResultManager
             
         }
         #endregion
+
+        static void typewritter(string str)
+        {
+            char[] chars = str.ToCharArray();
+            for (int i = 0; i < chars.Length; i++)
+            {
+                Console.Write(chars[i]);
+                Thread.Sleep(80);
+            }
+        }
     }
 
 }

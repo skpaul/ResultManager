@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 30, 2020 at 02:11 PM
+-- Generation Time: Dec 30, 2020 at 03:30 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -482,6 +482,21 @@ INSERT INTO `districts` (`id`, `name`, `division`, `percentage`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `district_quota`
+--
+
+CREATE TABLE `district_quota` (
+  `id` int(11) NOT NULL,
+  `districtName` varchar(200) NOT NULL,
+  `decimalQuantity` double(12,10) NOT NULL,
+  `roundedQuantity` int(11) NOT NULL,
+  `foundQuantity` int(11) NOT NULL,
+  `notFoundQuantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `divisions`
 --
 
@@ -504,6 +519,21 @@ INSERT INTO `divisions` (`id`, `name`, `percentage`) VALUES
 (6, 'Rangpur', 10.9600000000),
 (7, 'Sylhet', 6.8800000000),
 (8, 'Mymensingh', 7.6300000000);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `division_quota`
+--
+
+CREATE TABLE `division_quota` (
+  `id` int(11) NOT NULL,
+  `divisionName` varchar(200) NOT NULL,
+  `decimalQuantity` double(12,10) NOT NULL,
+  `roundedQuantity` int(11) NOT NULL,
+  `foundQuantity` int(11) NOT NULL,
+  `notFoundQuantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4260,9 +4290,21 @@ ALTER TABLE `districts`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `district_quota`
+--
+ALTER TABLE `district_quota`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `divisions`
 --
 ALTER TABLE `divisions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `division_quota`
+--
+ALTER TABLE `division_quota`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4312,10 +4354,22 @@ ALTER TABLE `applicants`
   MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=346;
 
 --
+-- AUTO_INCREMENT for table `district_quota`
+--
+ALTER TABLE `district_quota`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `divisions`
 --
 ALTER TABLE `divisions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `division_quota`
+--
+ALTER TABLE `division_quota`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `marks`
