@@ -12,5 +12,6 @@ namespace ResultManager.Models
         public double RoundedQuantity { get; set; }
         public int ApplicantFound { get; set; }
         public int ApplicantTransferredToGeneral { get; set; }
+        public int SearchCount { get; set; }
     }
 }

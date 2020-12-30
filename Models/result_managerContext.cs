@@ -56,6 +56,8 @@ namespace ResultManager.Models
                     .HasMaxLength(30)
                     .HasDefaultValueSql("'NULL'");
 
+                entity.Property(e => e.HasConsidered).HasColumnName("hasConsidered");
+
                 entity.Property(e => e.IsSelected).HasColumnName("isSelected");
 
                 entity.Property(e => e.Name)
@@ -268,6 +270,10 @@ namespace ResultManager.Models
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
                     .HasColumnType("double(5,2)");
+
+                entity.Property(e => e.SearchCount)
+                    .HasColumnName("searchCount")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<PostQuotaDivision>(entity =>
