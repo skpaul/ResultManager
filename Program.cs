@@ -39,18 +39,18 @@ namespace ResultManager
             
             try
             {
-                // resetApplicantTable(db); //ok
-                // resetPostTable(db); //ok
-                //  preparePosts(db);
+                resetApplicantTable(db); //ok
+                resetPostTable(db); //ok
+                 preparePosts(db);
                 
-                // truncatePostQuota(db);
-                // preparePostQuota(db);
+                truncatePostQuota(db);
+                preparePostQuota(db);
 
-                // truncateDivisionQuota(db); 
-                // prepareDivisionQuota(db);
+                truncateDivisionQuota(db); 
+                prepareDivisionQuota(db);
 
-                // truncateDistrictQuota(db); 
-                // prepareDistrictQuota(db);
+                truncateDistrictQuota(db); 
+                prepareDistrictQuota(db);
 
 
                 // truncatePostQuotaDivision(db);
@@ -62,7 +62,8 @@ namespace ResultManager
                 selectFreedomFighters(db);
                 selectAnsarVDP(db);
                 selectHandicapped(db);
-               
+                selectGeneral(db);
+                
                 Console.ForegroundColor = ConsoleColor.Green;
                 typewritter("===================",10);
                 Console.WriteLine();
@@ -1026,12 +1027,12 @@ namespace ResultManager
             var post = db.Posts.Where(d=>d.GeneralQuantity > d.GeneralFoundQuantity).FirstOrDefault();
             
             //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
-            var postQuota = (from c in db.PostQuota 
-                             where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
-                                   c.QuotaName=="Physically Handicapped" 
-                             orderby c.Id 
-                             select c).FirstOrDefault();
-            if(postQuota == null){
+            // var postQuota = (from c in db.PostQuota 
+            //                  where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
+            //                        c.QuotaName=="Physically Handicapped" 
+            //                  orderby c.Id 
+            //                  select c).FirstOrDefault();
+            if(post == null){
                 Console.ForegroundColor = ConsoleColor.White;
                 typewritter("\tNot applicable",50);
                 Console.WriteLine();
@@ -1039,32 +1040,28 @@ namespace ResultManager
             else
             { //postQuota found ---->
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                typewritter($"\t{postQuota.PostName}-", 250);
+                typewritter($"\t{post.PostName}-", 250);
 
                 Console.ForegroundColor = ConsoleColor.White;
                 typewritter(" Required quantity", 50);
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
+                typewritter($" {post.GeneralQuantity - post.GeneralFoundQuantity}",250);
                 Console.WriteLine();
 
-                postQuota.SearchCount++;
-                db.SaveChanges();
+               
+              
 
                 var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
                                 where a.HasConsidered == false &&
-                                      a.PostName == postQuota.PostName  && 
-                                      (a.Ffq=="Physically Handicapped") 
+                                      a.PostName == post.PostName  && 
+                                      (a.Ffq=="Non Quota") 
                                 orderby m.Total descending
                                 select a).FirstOrDefault();
-                var post = db.Posts.Where(d=>d.PostName == postQuota.PostName).Single();
+               
                 if(applicant == null){
-                    postQuota.ApplicantTransferredToGeneral++;
-                    post.GeneralQuantity++;
-                    db.SaveChanges();
-
                     Console.ForegroundColor= ConsoleColor.Red;
-                    typewritter("\tNot found. Transferred to general quota",10);
+                    typewritter("\tNot found.",10);
                     Console.WriteLine();
                     Thread.Sleep(500);
                 }
@@ -1083,13 +1080,10 @@ namespace ResultManager
                             districtQuota.FoundQuantity++;
                             applicant.IsSelected = true;
                             applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
-                            
-                            postQuota.ApplicantFound++;
-                            post.QuotaFoundQuantity++;
                             db.SaveChanges();
 
                             Console.ForegroundColor= ConsoleColor.Green;
-                            typewritter($"\tSelected for {postQuota.PostName} from ",10);
+                            typewritter($"\tSelected for {post.PostName} from ",10);
                             Console.ForegroundColor= ConsoleColor.White;
                             typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
                             Console.WriteLine();
