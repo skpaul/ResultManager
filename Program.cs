@@ -30,27 +30,27 @@ namespace ResultManager
             Console.WriteLine();
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            typewritter("Press any key to continue ...");
+            typewritter("Press any key to continue ...", 30);
             Console.ResetColor();
             Console.WriteLine();
-            // Console.ReadLine();
+            Console.ReadLine();
 
             var db = new result_managerContext();
             
             try
             {
-                resetApplicantTable(db); //ok
-                resetPostTable(db); //ok
-                 preparePosts(db);
+                // resetApplicantTable(db); //ok
+                // resetPostTable(db); //ok
+                //  preparePosts(db);
                 
-                truncatePostQuota(db);
-                preparePostQuota(db);
+                // truncatePostQuota(db);
+                // preparePostQuota(db);
 
-                truncateDivisionQuota(db); 
-                prepareDivisionQuota(db);
+                // truncateDivisionQuota(db); 
+                // prepareDivisionQuota(db);
 
-                truncateDistrictQuota(db); 
-                prepareDistrictQuota(db);
+                // truncateDistrictQuota(db); 
+                // prepareDistrictQuota(db);
 
 
                 // truncatePostQuotaDivision(db);
@@ -60,14 +60,24 @@ namespace ResultManager
                 // prepareMarks(db);
 
                 selectFreedomFighters(db);
-
-                //  var floatNumber = 12.5523;
-
-                //     var x = floatNumber - Math.Truncate(floatNumber);
-                //     Console.WriteLine(x);
-                Console.WriteLine("Data mining completed.");
-                // Console.WriteLine("Press any key to exit...");
-                // Console.ReadLine();
+                selectAnsarVDP(db);
+                selectHandicapped(db);
+               
+                Console.ForegroundColor = ConsoleColor.Green;
+                typewritter("===================",10);
+                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Black;
+                typewritter("Process completed.", 100);
+                Console.ResetColor();
+                Console.WriteLine();
+                 Console.ForegroundColor = ConsoleColor.Green;
+                typewritter("===================",10);
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("Press any key to exit...", 50);
+                Console.ReadLine();
             }
             catch (System.Exception exp)
             {
@@ -733,6 +743,14 @@ namespace ResultManager
 
         #region applicant selection
         static void selectFreedomFighters(result_managerContext db){
+
+            Console.ForegroundColor= ConsoleColor.Blue;
+            typewritter("Searching Freedom Fighter  ",10);
+            Console.ForegroundColor = ConsoleColor.White;
+            typewritter(".......",200);
+           
+            Console.WriteLine();
+
             //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
             var postQuota = (from c in db.PostQuota 
                              where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
@@ -740,10 +758,22 @@ namespace ResultManager
                              orderby c.Id 
                              select c).FirstOrDefault();
             if(postQuota == null){
-                //Do nothing.
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("\tNot applicable",50);
+                Console.WriteLine();
             }
             else
             { //postQuota found ---->
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                typewritter($"\t{postQuota.PostName}-",50);
+
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter(" Required quantity",50);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
+                Console.WriteLine();
+
                 postQuota.SearchCount++;
                 db.SaveChanges();
 
@@ -758,6 +788,11 @@ namespace ResultManager
                     postQuota.ApplicantTransferredToGeneral++;
                     post.GeneralQuantity++;
                     db.SaveChanges();
+
+                    Console.ForegroundColor= ConsoleColor.Red;
+                    typewritter("\tNot found. Transferred to general quota",10);
+                    Console.WriteLine();
+                    Thread.Sleep(500);
                 }
                 else
                 { //applicant found --->
@@ -778,7 +813,13 @@ namespace ResultManager
                             postQuota.ApplicantFound++;
                             post.QuotaFoundQuantity++;
                             db.SaveChanges();
-                            Console.WriteLine($"Selected ff from div-{divisionQuota.DivisionName}, dist-{districtQuota.DistrictName}");
+
+                            Console.ForegroundColor= ConsoleColor.Green;
+                            typewritter($"\tSelected for {postQuota.PostName} from",10);
+                            Console.ForegroundColor= ConsoleColor.White;
+                            typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
+                            Console.WriteLine();
+                            Thread.Sleep(500);
                         }
                         // else{
                         //     selectFreedomFighters(db);
@@ -788,6 +829,280 @@ namespace ResultManager
                     //     selectFreedomFighters(db);
                     // }
                      selectFreedomFighters(db);
+                } //<--- applicant found
+            }//<---- postQuota found
+        }
+
+        static void selectAnsarVDP(result_managerContext db){
+
+            Console.ForegroundColor= ConsoleColor.Blue;
+            typewritter("Searching Ansar-VDP  ",10);
+            Console.ForegroundColor = ConsoleColor.White;
+            typewritter(".......",200);
+            Console.WriteLine();
+
+            //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
+            var postQuota = (from c in db.PostQuota 
+                             where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
+                                   c.QuotaName=="Ansar-VDP" 
+                             orderby c.Id 
+                             select c).FirstOrDefault();
+            if(postQuota == null){
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("\tNot applicable",50);
+                Console.WriteLine();
+            }
+            else
+            { //postQuota found ---->
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                typewritter($"\t{postQuota.PostName}-",250);
+
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter(" Required quantity",50);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
+                Console.WriteLine();
+
+                postQuota.SearchCount++;
+                db.SaveChanges();
+
+                var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
+                                where a.HasConsidered == false &&
+                                      a.PostName == postQuota.PostName  && 
+                                      (a.Ffq=="Ansar-VDP") 
+                                orderby m.Total descending
+                                select a).FirstOrDefault();
+                var post = db.Posts.Where(d=>d.PostName == postQuota.PostName).Single();
+                if(applicant == null){
+                    postQuota.ApplicantTransferredToGeneral++;
+                    post.GeneralQuantity++;
+                    db.SaveChanges();
+
+                    Console.ForegroundColor= ConsoleColor.Red;
+                    typewritter("\tNot found. Transferred to general quota",10);
+                    Console.WriteLine();
+                    Thread.Sleep(500);
+                }
+                else
+                { //applicant found --->
+                    applicant.HasConsidered = true;
+                    db.SaveChanges();
+
+                    //check his division quota
+                    var district = db.Districts.Where(d=>d.Name == applicant.PermanentDistrict).First();
+                    var divisionQuota = db.DivisionQuota.Where(q=>q.DivisionName == district.Division).Single();
+                    if(divisionQuota.RoundedQuantity > divisionQuota.FoundQuantity){
+                        var districtQuota = db.DistrictQuota.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
+                        if(districtQuota.RoundedQuantity > districtQuota.FoundQuantity){
+                            divisionQuota.FoundQuantity++;
+                            districtQuota.FoundQuantity++;
+                            applicant.IsSelected = true;
+                            applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
+                            
+                            postQuota.ApplicantFound++;
+                            post.QuotaFoundQuantity++;
+                            db.SaveChanges();
+
+                            Console.ForegroundColor= ConsoleColor.Green;
+                            typewritter($"\tSelected for {postQuota.PostName} from ",10);
+                            Console.ForegroundColor= ConsoleColor.White;
+                            typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
+                            Console.WriteLine();
+                            Thread.Sleep(500);
+                        }
+                        // else{
+                        //     selectFreedomFighters(db);
+                        // }
+                    }
+                    // else{
+                    //     selectFreedomFighters(db);
+                    // }
+                     selectAnsarVDP(db);
+                } //<--- applicant found
+            }//<---- postQuota found
+        }
+
+        static void selectHandicapped(result_managerContext db){
+
+            Console.ForegroundColor= ConsoleColor.Blue;
+            typewritter("Searching Physically Handicapped  ",10);
+            Console.ForegroundColor = ConsoleColor.White;
+            typewritter(".......",200);
+            Console.WriteLine();
+
+            //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
+            var postQuota = (from c in db.PostQuota 
+                             where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
+                                   c.QuotaName=="Physically Handicapped" 
+                             orderby c.Id 
+                             select c).FirstOrDefault();
+            if(postQuota == null){
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("\tNot applicable",50);
+                Console.WriteLine();
+            }
+            else
+            { //postQuota found ---->
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                typewritter($"\t{postQuota.PostName}-", 250);
+
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter(" Required quantity", 50);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
+                Console.WriteLine();
+
+                postQuota.SearchCount++;
+                db.SaveChanges();
+
+                var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
+                                where a.HasConsidered == false &&
+                                      a.PostName == postQuota.PostName  && 
+                                      (a.Ffq=="Physically Handicapped") 
+                                orderby m.Total descending
+                                select a).FirstOrDefault();
+                var post = db.Posts.Where(d=>d.PostName == postQuota.PostName).Single();
+                if(applicant == null){
+                    postQuota.ApplicantTransferredToGeneral++;
+                    post.GeneralQuantity++;
+                    db.SaveChanges();
+
+                    Console.ForegroundColor= ConsoleColor.Red;
+                    typewritter("\tNot found. Transferred to general quota",10);
+                    Console.WriteLine();
+                    Thread.Sleep(500);
+                }
+                else
+                { //applicant found --->
+                    applicant.HasConsidered = true;
+                    db.SaveChanges();
+
+                    //check his division quota
+                    var district = db.Districts.Where(d=>d.Name == applicant.PermanentDistrict).First();
+                    var divisionQuota = db.DivisionQuota.Where(q=>q.DivisionName == district.Division).Single();
+                    if(divisionQuota.RoundedQuantity > divisionQuota.FoundQuantity){
+                        var districtQuota = db.DistrictQuota.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
+                        if(districtQuota.RoundedQuantity > districtQuota.FoundQuantity){
+                            divisionQuota.FoundQuantity++;
+                            districtQuota.FoundQuantity++;
+                            applicant.IsSelected = true;
+                            applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
+                            
+                            postQuota.ApplicantFound++;
+                            post.QuotaFoundQuantity++;
+                            db.SaveChanges();
+
+                            Console.ForegroundColor= ConsoleColor.Green;
+                            typewritter($"\tSelected for {postQuota.PostName} from ",10);
+                            Console.ForegroundColor= ConsoleColor.White;
+                            typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
+                            Console.WriteLine();
+                            Thread.Sleep(500);
+                        }
+                        // else{
+                        //     selectFreedomFighters(db);
+                        // }
+                    }
+                    // else{
+                    //     selectFreedomFighters(db);
+                    // }
+                     selectHandicapped(db);
+                } //<--- applicant found
+            }//<---- postQuota found
+        }
+
+
+
+        static void selectGeneral(result_managerContext db){
+
+            Console.ForegroundColor= ConsoleColor.Blue;
+            typewritter("Searching General candidates  ",10);
+            Console.ForegroundColor = ConsoleColor.White;
+            typewritter(".......", 200);
+            Console.WriteLine();
+
+            var post = db.Posts.Where(d=>d.GeneralQuantity > d.GeneralFoundQuantity).FirstOrDefault();
+            
+            //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
+            var postQuota = (from c in db.PostQuota 
+                             where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
+                                   c.QuotaName=="Physically Handicapped" 
+                             orderby c.Id 
+                             select c).FirstOrDefault();
+            if(postQuota == null){
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("\tNot applicable",50);
+                Console.WriteLine();
+            }
+            else
+            { //postQuota found ---->
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                typewritter($"\t{postQuota.PostName}-", 250);
+
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter(" Required quantity", 50);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
+                Console.WriteLine();
+
+                postQuota.SearchCount++;
+                db.SaveChanges();
+
+                var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
+                                where a.HasConsidered == false &&
+                                      a.PostName == postQuota.PostName  && 
+                                      (a.Ffq=="Physically Handicapped") 
+                                orderby m.Total descending
+                                select a).FirstOrDefault();
+                var post = db.Posts.Where(d=>d.PostName == postQuota.PostName).Single();
+                if(applicant == null){
+                    postQuota.ApplicantTransferredToGeneral++;
+                    post.GeneralQuantity++;
+                    db.SaveChanges();
+
+                    Console.ForegroundColor= ConsoleColor.Red;
+                    typewritter("\tNot found. Transferred to general quota",10);
+                    Console.WriteLine();
+                    Thread.Sleep(500);
+                }
+                else
+                { //applicant found --->
+                    applicant.HasConsidered = true;
+                    db.SaveChanges();
+
+                    //check his division quota
+                    var district = db.Districts.Where(d=>d.Name == applicant.PermanentDistrict).First();
+                    var divisionQuota = db.DivisionQuota.Where(q=>q.DivisionName == district.Division).Single();
+                    if(divisionQuota.RoundedQuantity > divisionQuota.FoundQuantity){
+                        var districtQuota = db.DistrictQuota.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
+                        if(districtQuota.RoundedQuantity > districtQuota.FoundQuantity){
+                            divisionQuota.FoundQuantity++;
+                            districtQuota.FoundQuantity++;
+                            applicant.IsSelected = true;
+                            applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
+                            
+                            postQuota.ApplicantFound++;
+                            post.QuotaFoundQuantity++;
+                            db.SaveChanges();
+
+                            Console.ForegroundColor= ConsoleColor.Green;
+                            typewritter($"\tSelected for {postQuota.PostName} from ",10);
+                            Console.ForegroundColor= ConsoleColor.White;
+                            typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
+                            Console.WriteLine();
+                            Thread.Sleep(500);
+                        }
+                        // else{
+                        //     selectFreedomFighters(db);
+                        // }
+                    }
+                    // else{
+                    //     selectFreedomFighters(db);
+                    // }
+                     selectGeneral(db);
                 } //<--- applicant found
             }//<---- postQuota found
         }
@@ -803,5 +1118,4 @@ namespace ResultManager
             }
         }
     }
-
 }
