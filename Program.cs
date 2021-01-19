@@ -30,16 +30,16 @@ namespace ResultManager
             
             try
             {
-                // resetApplicantTable(db); //ok
+                resetApplicantTable(db); //ok
                 resetPostTable(db); //ok
                  preparePosts(db);
                 
-                truncatePostDistribution(db); //OK
-                preparePostDistribution(db); //OK
+                // truncatePostDistribution(db); //OK
+                // preparePostDistribution(db); //OK
 
-                truncateDistrictQuota(db); //OK
-                truncateDivisionDistribution(db); //OK 
-                prepareDivisionDistribution(db); //OK
+                // truncateDistrictQuota(db); //OK
+                // truncateDivisionDistribution(db); //OK 
+                // prepareDivisionDistribution(db); //OK
               
 
                 // truncatePostQuotaDivision(db);
@@ -48,7 +48,7 @@ namespace ResultManager
                 // preparePostQuotaDivisionDistrict(db);
                 // prepareMarks(db);
 
-                // selectFreedomFighters(db);
+               // selectFreedomFighters(db);
                 // selectAnsarVDP(db);
                 // selectHandicapped(db);
                 // selectGeneral(db);
@@ -86,6 +86,7 @@ namespace ResultManager
         }
         #endregion
 
+        #region post table
         //reset posts table
         static void resetPostTable(result_managerContext db){
             Console.ForegroundColor = ConsoleColor.Red;
@@ -95,30 +96,34 @@ namespace ResultManager
             db.Database.ExecuteSqlRaw(commandText);
         }
 
+       
+
         //This method breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity.
         static void preparePosts(result_managerContext db){
            
             var quotaTotal = db.Quotas.Sum(s=>s.Percentage);
            
-            var posts = db.Posts.Where(d=>d.IsEligibleForQuota == true).OrderBy(o=>o.PostName).ToList();
+            var posts = db.Posts.OrderBy(o=>o.PostId).ToList();
             foreach (var post in posts)
             {
-               
-                post.TotalQuotaPercentage = quotaTotal;
+               if(post.IsEligibleForQuota){
+                    post.GeneralQuantity  = post.Vacancies;
+               }
+               else{
+ post.TotalQuotaPercentage = quotaTotal;
                 double d = (double)quotaTotal/100;
                 double v = (double) d* post.Vacancies;
                 double quantity = v;
                 post.MaximumQuotaQuantity =(int) Math.Round(v);
                 post.GeneralQuantity  = post.Vacancies - (int) post.MaximumQuotaQuantity;
-                db.SaveChanges();
+               }
             }
-            Console.WriteLine();
-            Console.ResetColor();
-            Console.WriteLine();
-            
+            db.SaveChanges();
         }
 
-        #region Post quota
+        #endregion
+
+        #region Post Distribution
          static void truncatePostDistribution(result_managerContext db){
             Console.WriteLine(); 
             Console.ForegroundColor = ConsoleColor.Red;
@@ -216,7 +221,7 @@ namespace ResultManager
         #endregion
 
         //OK
-        #region Division Quoa
+        #region Division Distribution
         //Ok
         static void truncateDivisionDistribution(result_managerContext db)
         {
@@ -292,7 +297,7 @@ namespace ResultManager
         #endregion
 
         //OK
-        #region District Quoa
+        #region District Distribution
         //OK
         static void truncateDistrictQuota(result_managerContext db)
         {
@@ -474,96 +479,139 @@ namespace ResultManager
         #endregion
 
         #region applicant selection
-        // static void selectFreedomFighters(result_managerContext db){
 
-        //     Console.ForegroundColor= ConsoleColor.Blue;
-        //     typewritter("Searching Freedom Fighter  ",10);
-        //     Console.ForegroundColor = ConsoleColor.White;
-        //     typewritter(".......",200);
+        static void selectApplicant(result_managerContext db){
+            var posts = db.Posts.OrderBy(d=>d.PostId).ToList();
+            var districtDistributions = db.DistrictDistribution.ToList();
+            var divisionDistributions = db.DivisionDistribution.ToList();
+            
+            foreach (var post in posts)
+            {
+                if(post.IsEligibleForQuota)
+                {
+
+                } //IsEligibleForQuota = true
+                else{
+                    var applicants =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
+                                    where a.PostName == post.PostName && a.IsSelected == false
+                                    orderby m.Total descending
+                                    select a).ToList();
+                    if(applicants.Count() > 0){
+                        int selectionRank = 1;
+                        //if application > vacancies, consider top vacancy as selected. And rest of the applicants will have just selection rank.
+                        foreach (var applicant in applicants)
+                        {
+                            //Get district distribution 
+                            var district = districtDistributions.Where(m => m.DistrictName == applicant.PermanentDistrict).First();
+                            if (district.FoundQuantity < district.RoundedQuantity)
+                            {
+                                //Get division distribution
+                                var division = divisionDistributions.Where(m => m.DivisionId == district.DivisionId).First();
+                                //check whether division quota is available
+                                if (division.FoundQuantity < division.RoundedQuantity)
+                                {
+                                    //division quota is ok
+                                    if (selectionRank < post.Vacancies)
+                                    {
+                                        applicant.IsSelected = true;
+                                        applicant.SelectionRank = selectionRank;
+                                        division.FoundQuantity++;
+                                        district.FoundQuantity++;
+                                    }
+                                    else{
+                                        applicant.SelectionRank = selectionRank;
+                                    }
+                                    selectionRank++;
+                                }//division quota check
+                            } //district quota check
+
+                        }
+                    } //applicants.Count() > 0
+                }//IsEligibleForQuota = false
+            } //posts foreach
+        }
+        static void selectFreedomFighters(result_managerContext db){
+
+            Console.ForegroundColor= ConsoleColor.Blue;
+            typewritter("Searching Freedom Fighter  ",10);
+            Console.ForegroundColor = ConsoleColor.White;
+            typewritter(".......",200);
            
-        //     Console.WriteLine();
+            Console.WriteLine();
 
-        //     //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
-        //     var postQuota = (from c in db.PostQuota 
-        //                      where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
-        //                            c.QuotaName=="Freedom Fighter" 
-        //                      orderby c.Id 
-        //                      select c).FirstOrDefault();
-        //     if(postQuota == null){
-        //         Console.ForegroundColor = ConsoleColor.White;
-        //         typewritter("\tNot applicable",50);
-        //         Console.WriteLine();
-        //     }
-        //     else
-        //     { //postQuota found ---->
-        //         Console.ForegroundColor = ConsoleColor.Magenta;
-        //         typewritter($"\t{postQuota.PostName}-",50);
+            //get posts and quota names from post_quota where decimal quantity greater than applicantFound+applicantNotFound
+            var postDistribution = (from c in db.PostDistribution 
+                             where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) && 
+                                   c.QuotaName=="Freedom Fighter" 
+                             orderby c.Id 
+                             select c).FirstOrDefault();
+            if(postDistribution == null){
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter("\tNot applicable",50);
+                Console.WriteLine();
+            }
+            else
+            { //postDistribution found ---->
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                typewritter($"\t{ postDistribution.PostName }-", 50);
 
-        //         Console.ForegroundColor = ConsoleColor.White;
-        //         typewritter(" Required quantity",50);
-        //         Console.WriteLine();
-        //         Console.ForegroundColor = ConsoleColor.Cyan;
-        //         typewritter($" {postQuota.RoundedQuantity - (postQuota.ApplicantFound+postQuota.ApplicantTransferredToGeneral)}",250);
-        //         Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                typewritter($" Required quantity {postDistribution.RoundedQuantity}", 50);
+                Console.WriteLine();
+              
+                postDistribution.SearchCount++;
+                db.SaveChanges();
 
-        //         postQuota.SearchCount++;
-        //         db.SaveChanges();
+                var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
+                                where a.HasConsidered == false &&
+                                      a.PostName == postDistribution.PostName  && 
+                                      (a.Ffq=="Child of Freedom Fighter" || a.Ffq=="Grand Child of Freedom Fighter") 
+                                orderby m.Total descending
+                                select a).FirstOrDefault();
 
-        //         var applicant =(from a in db.Applicants join m in db.Marks on a.Roll equals m.Roll  
-        //                         where a.HasConsidered == false &&
-        //                               a.PostName == postQuota.PostName  && 
-        //                               (a.Ffq=="Child of Freedom Fighter" || a.Ffq=="Grand Child of Freedom Fighter") 
-        //                         orderby m.Total descending
-        //                         select a).FirstOrDefault();
-        //         var post = db.Posts.Where(d=>d.PostName == postQuota.PostName).Single();
-        //         if(applicant == null){
-        //             postQuota.ApplicantTransferredToGeneral++;
-        //             post.GeneralQuantity++;
-        //             db.SaveChanges();
+                var post = db.Posts.Where(d=>d.PostName == postDistribution.PostName).Single();
+                if(applicant == null){
+                    postDistribution.ApplicantTransferredToGeneral++;
+                    post.GeneralQuantity++;
+                    db.SaveChanges();
 
-        //             Console.ForegroundColor= ConsoleColor.Red;
-        //             typewritter("\tNot found. Transferred to general quota",10);
-        //             Console.WriteLine();
-        //             Thread.Sleep(500);
-        //         }
-        //         else
-        //         { //applicant found --->
-        //             applicant.HasConsidered = true;
-        //             db.SaveChanges();
+                    Console.ForegroundColor= ConsoleColor.Red;
+                    typewritter("\tNot found. Transferred to general quota",10);
+                    Console.WriteLine();
+                    Thread.Sleep(500);
+                }
+                else
+                { //applicant found --->
+                    applicant.HasConsidered = true;
+                    db.SaveChanges();
 
-        //             //check his division quota
-        //             var district = db.Districts.Where(d=>d.Name == applicant.PermanentDistrict).First();
-        //             var divisionQuota = db.DivisionQuota.Where(q=>q.DivisionName == district.Division).Single();
-        //             if(divisionQuota.RoundedQuantity > divisionQuota.FoundQuantity){
-        //                 var districtQuota = db.DistrictQuota.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
-        //                 if(districtQuota.RoundedQuantity > districtQuota.FoundQuantity){
-        //                     divisionQuota.FoundQuantity++;
-        //                     districtQuota.FoundQuantity++;
-        //                     applicant.IsSelected = true;
-        //                     applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
+                    //check his division quota
+                    var district = db.Districts.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
+                    var divisionQuota = db.DivisionDistribution.Where(q=>q.DivisionName == district.DivisionName).Single();
+                    if(divisionQuota.RoundedQuantity > divisionQuota.FoundQuantity){
+                        var districtQuota = db.DistrictDistribution.Where(d=>d.DistrictName == applicant.PermanentDistrict).First();
+                        if(districtQuota.RoundedQuantity > districtQuota.FoundQuantity){
+                            divisionQuota.FoundQuantity++;
+                            districtQuota.FoundQuantity++;
+                            applicant.IsSelected = true;
+                            applicant.SelectionRank = db.Applicants.Max(d=>d.SelectionRank) + 1;
                             
-        //                     postQuota.ApplicantFound++;
-        //                     post.QuotaFoundQuantity++;
-        //                     db.SaveChanges();
+                            postDistribution.ApplicantFound++;
+                            post.QuotaFoundQuantity++;
+                            db.SaveChanges();
 
-        //                     Console.ForegroundColor= ConsoleColor.Green;
-        //                     typewritter($"\tSelected for {postQuota.PostName} from",10);
-        //                     Console.ForegroundColor= ConsoleColor.White;
-        //                     typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
-        //                     Console.WriteLine();
-        //                     Thread.Sleep(500);
-        //                 }
-        //                 // else{
-        //                 //     selectFreedomFighters(db);
-        //                 // }
-        //             }
-        //             // else{
-        //             //     selectFreedomFighters(db);
-        //             // }
-        //              selectFreedomFighters(db);
-        //         } //<--- applicant found
-        //     }//<---- postQuota found
-        // }
+                            Console.ForegroundColor= ConsoleColor.Green;
+                            typewritter($"\tSelected for {postDistribution.PostName} from",10);
+                            Console.ForegroundColor= ConsoleColor.White;
+                            typewritter($" {districtQuota.DistrictName}, {divisionQuota.DivisionName}",100);
+                            Console.WriteLine();
+                            Thread.Sleep(500);
+                        }
+                    }
+                     selectFreedomFighters(db);
+                } //<--- applicant found
+            }//<---- postQuota found
+        }
 
         // static void selectAnsarVDP(result_managerContext db){
 
