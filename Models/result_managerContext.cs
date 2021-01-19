@@ -26,6 +26,8 @@ namespace ResultManager.Models
         public virtual DbSet<PostQuotaDivisionDistrict> PostQuotaDivisionDistrict { get; set; }
         public virtual DbSet<Posts> Posts { get; set; }
         public virtual DbSet<Quotas> Quotas { get; set; }
+        public virtual DbSet<SelectedApplicants> SelectedApplicants { get; set; }
+        public virtual DbSet<View1> View1 { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,10 +42,13 @@ namespace ResultManager.Models
         {
             modelBuilder.Entity<Applicants>(entity =>
             {
+                entity.HasKey(e => e.ApplicantId)
+                    .HasName("PRIMARY");
+
                 entity.ToTable("applicants");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
+                entity.Property(e => e.ApplicantId)
+                    .HasColumnName("applicantId")
                     .HasColumnType("int(3)");
 
                 entity.Property(e => e.Dob)
@@ -92,8 +97,12 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.Roll)
                     .HasColumnName("roll")
-                    .HasMaxLength(200)
-                    .HasDefaultValueSql("'NULL'");
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SelectionCriteria)
+                    .IsRequired()
+                    .HasColumnName("selectionCriteria")
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.SelectionRank)
                     .HasColumnName("selectionRank")
@@ -263,13 +272,12 @@ namespace ResultManager.Models
                     .HasColumnType("int(11)");
 
                 entity.Property(e => e.Roll)
-                    .IsRequired()
                     .HasColumnName("roll")
-                    .HasMaxLength(200);
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.Total)
                     .HasColumnName("total")
-                    .HasColumnType("double(4,2)");
+                    .HasColumnType("double(5,2)");
 
                 entity.Property(e => e.Viva)
                     .HasColumnName("viva")
@@ -471,6 +479,119 @@ namespace ResultManager.Models
                 entity.Property(e => e.Priority)
                     .HasColumnName("priority")
                     .HasColumnType("int(11)");
+            });
+
+            modelBuilder.Entity<SelectedApplicants>(entity =>
+            {
+                entity.HasKey(e => e.SelectionId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("selected_applicants");
+
+                entity.Property(e => e.SelectionId)
+                    .HasColumnName("selectionId")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ApplicantId)
+                    .HasColumnName("applicantId")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.PermanentDistrict)
+                    .IsRequired()
+                    .HasColumnName("permanentDistrict")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PermanentDivision)
+                    .IsRequired()
+                    .HasColumnName("permanentDivision")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PostName)
+                    .IsRequired()
+                    .HasColumnName("postName")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Roll)
+                    .HasColumnName("roll")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SelectionCriteria)
+                    .IsRequired()
+                    .HasColumnName("selectionCriteria")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SelectionRank)
+                    .HasColumnName("selectionRank")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Total)
+                    .HasColumnName("total")
+                    .HasColumnType("double(5,2)");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("userId")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Viva)
+                    .HasColumnName("viva")
+                    .HasColumnType("double(4,2)");
+
+                entity.Property(e => e.Written)
+                    .HasColumnName("written")
+                    .HasColumnType("double(4,2)");
+            });
+
+            modelBuilder.Entity<View1>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("view1");
+
+                entity.Property(e => e.ApplicantId)
+                    .HasColumnName("applicantId")
+                    .HasColumnType("int(3)");
+
+                entity.Property(e => e.Ffq)
+                    .HasColumnName("ffq")
+                    .HasMaxLength(30)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.HasConsidered).HasColumnName("hasConsidered");
+
+                entity.Property(e => e.IsSelected).HasColumnName("isSelected");
+
+                entity.Property(e => e.PermanentDistrict)
+                    .HasColumnName("permanentDistrict")
+                    .HasMaxLength(200)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PostName)
+                    .HasColumnName("postName")
+                    .HasMaxLength(200)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Roll)
+                    .HasColumnName("roll")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SelectionCriteria)
+                    .IsRequired()
+                    .HasColumnName("selectionCriteria")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SelectionRank)
+                    .HasColumnName("selectionRank")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Total)
+                    .HasColumnName("total")
+                    .HasColumnType("double(5,2)");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("userId")
+                    .HasMaxLength(6)
+                    .HasDefaultValueSql("'NULL'");
             });
 
             OnModelCreatingPartial(modelBuilder);
