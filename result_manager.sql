@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2020 at 09:49 AM
+-- Generation Time: Jan 19, 2021 at 09:01 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -404,9 +404,9 @@ INSERT INTO `applicants` (`id`, `userId`, `roll`, `postCode`, `postName`, `name`
 --
 
 CREATE TABLE `districts` (
-  `id` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `division` varchar(200) NOT NULL,
+  `districtId` int(11) NOT NULL,
+  `districtName` varchar(200) NOT NULL,
+  `divisionName` varchar(200) NOT NULL,
   `percentage` double(12,10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -414,7 +414,7 @@ CREATE TABLE `districts` (
 -- Dumping data for table `districts`
 --
 
-INSERT INTO `districts` (`id`, `name`, `division`, `percentage`) VALUES
+INSERT INTO `districts` (`districtId`, `districtName`, `divisionName`, `percentage`) VALUES
 (1, 'Barguna', 'Barishal', 0.6200000000),
 (2, 'Barishal', 'Barishal', 1.6100000000),
 (3, 'Bhola', 'Barishal', 1.2300000000),
@@ -483,10 +483,10 @@ INSERT INTO `districts` (`id`, `name`, `division`, `percentage`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `district_quota`
+-- Table structure for table `district_distribution`
 --
 
-CREATE TABLE `district_quota` (
+CREATE TABLE `district_distribution` (
   `id` int(11) NOT NULL,
   `districtName` varchar(200) NOT NULL,
   `decimalQuantity` double(12,10) NOT NULL,
@@ -496,10 +496,10 @@ CREATE TABLE `district_quota` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `district_quota`
+-- Dumping data for table `district_distribution`
 --
 
-INSERT INTO `district_quota` (`id`, `districtName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
+INSERT INTO `district_distribution` (`id`, `districtName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
 (1, 'Dhaka', 3.1768000000, 3, 0, 0),
 (2, 'Chattogram', 2.0102000000, 2, 0, 0),
 (3, 'Cumilla', 1.4212000000, 1, 0, 0),
@@ -572,8 +572,8 @@ INSERT INTO `district_quota` (`id`, `districtName`, `decimalQuantity`, `roundedQ
 --
 
 CREATE TABLE `divisions` (
-  `id` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
+  `divisionId` int(11) NOT NULL,
+  `divisionName` varchar(200) NOT NULL,
   `percentage` double(12,10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -581,7 +581,7 @@ CREATE TABLE `divisions` (
 -- Dumping data for table `divisions`
 --
 
-INSERT INTO `divisions` (`id`, `name`, `percentage`) VALUES
+INSERT INTO `divisions` (`divisionId`, `divisionName`, `percentage`) VALUES
 (1, 'Barishal', 5.7800000000),
 (2, 'Chattogram', 19.7900000000),
 (3, 'Dhaka', 25.2900000000),
@@ -594,10 +594,10 @@ INSERT INTO `divisions` (`id`, `name`, `percentage`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `division_quota`
+-- Table structure for table `division_distribution`
 --
 
-CREATE TABLE `division_quota` (
+CREATE TABLE `division_distribution` (
   `id` int(11) NOT NULL,
   `divisionName` varchar(200) NOT NULL,
   `decimalQuantity` double(12,10) NOT NULL,
@@ -607,10 +607,10 @@ CREATE TABLE `division_quota` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `division_quota`
+-- Dumping data for table `division_distribution`
 --
 
-INSERT INTO `division_quota` (`id`, `divisionName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
+INSERT INTO `division_distribution` (`id`, `divisionName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
 (1, 'Dhaka', 9.6102000000, 10, 1, 0),
 (2, 'Chattogram', 7.5202000000, 8, 0, 0),
 (3, 'Rajshahi', 4.8754000000, 5, 0, 0),
@@ -4373,24 +4373,24 @@ ALTER TABLE `applicants`
 -- Indexes for table `districts`
 --
 ALTER TABLE `districts`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`districtId`);
 
 --
--- Indexes for table `district_quota`
+-- Indexes for table `district_distribution`
 --
-ALTER TABLE `district_quota`
+ALTER TABLE `district_distribution`
   ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `divisions`
 --
 ALTER TABLE `divisions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`divisionId`);
 
 --
--- Indexes for table `division_quota`
+-- Indexes for table `division_distribution`
 --
-ALTER TABLE `division_quota`
+ALTER TABLE `division_distribution`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4440,21 +4440,21 @@ ALTER TABLE `applicants`
   MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=346;
 
 --
--- AUTO_INCREMENT for table `district_quota`
+-- AUTO_INCREMENT for table `district_distribution`
 --
-ALTER TABLE `district_quota`
+ALTER TABLE `district_distribution`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `divisions`
 --
 ALTER TABLE `divisions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `divisionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `division_quota`
+-- AUTO_INCREMENT for table `division_distribution`
 --
-ALTER TABLE `division_quota`
+ALTER TABLE `division_distribution`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --

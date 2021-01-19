@@ -5,8 +5,8 @@ namespace ResultManager.Models
 {
     public partial class Divisions
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int DivisionId { get; set; }
+        public string DivisionName { get; set; }
         public double Percentage { get; set; }
     }
 }

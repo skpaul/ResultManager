@@ -16,9 +16,9 @@ namespace ResultManager.Models
         }
 
         public virtual DbSet<Applicants> Applicants { get; set; }
-        public virtual DbSet<DistrictQuota> DistrictQuota { get; set; }
+        public virtual DbSet<DistrictDistribution> DistrictDistribution { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
-        public virtual DbSet<DivisionQuota> DivisionQuota { get; set; }
+        public virtual DbSet<DivisionDistribution> DivisionDistribution { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
         public virtual DbSet<Marks> Marks { get; set; }
         public virtual DbSet<PostQuota> PostQuota { get; set; }
@@ -110,9 +110,9 @@ namespace ResultManager.Models
                     .HasDefaultValueSql("'NULL'");
             });
 
-            modelBuilder.Entity<DistrictQuota>(entity =>
+            modelBuilder.Entity<DistrictDistribution>(entity =>
             {
-                entity.ToTable("district_quota");
+                entity.ToTable("district_distribution");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -122,10 +122,27 @@ namespace ResultManager.Models
                     .HasColumnName("decimalQuantity")
                     .HasColumnType("double(12,10)");
 
+                entity.Property(e => e.DistrictId)
+                    .HasColumnName("districtId")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.DistrictName)
                     .IsRequired()
                     .HasColumnName("districtName")
                     .HasMaxLength(200);
+
+                entity.Property(e => e.DivisionId)
+                    .HasColumnName("divisionId")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DivisionName)
+                    .IsRequired()
+                    .HasColumnName("divisionName")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.DivisionTotal)
+                    .HasColumnName("divisionTotal")
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.FoundQuantity)
                     .HasColumnName("foundQuantity")
@@ -135,27 +152,38 @@ namespace ResultManager.Models
                     .HasColumnName("notFoundQuantity")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.Percentage)
+                    .HasColumnName("percentage")
+                    .HasColumnType("double(5,3)");
+
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.TotalVacancy)
+                    .HasColumnName("totalVacancy")
                     .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Districts>(entity =>
             {
+                entity.HasKey(e => e.DistrictId)
+                    .HasName("PRIMARY");
+
                 entity.ToTable("districts");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
+                entity.Property(e => e.DistrictId)
+                    .HasColumnName("districtId")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Division)
+                entity.Property(e => e.DistrictName)
                     .IsRequired()
-                    .HasColumnName("division")
+                    .HasColumnName("districtName")
                     .HasMaxLength(200);
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.DivisionName)
                     .IsRequired()
-                    .HasColumnName("name")
+                    .HasColumnName("divisionName")
                     .HasMaxLength(200);
 
                 entity.Property(e => e.Percentage)
@@ -163,9 +191,9 @@ namespace ResultManager.Models
                     .HasColumnType("double(12,10)");
             });
 
-            modelBuilder.Entity<DivisionQuota>(entity =>
+            modelBuilder.Entity<DivisionDistribution>(entity =>
             {
-                entity.ToTable("division_quota");
+                entity.ToTable("division_distribution");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -174,6 +202,10 @@ namespace ResultManager.Models
                 entity.Property(e => e.DecimalQuantity)
                     .HasColumnName("decimalQuantity")
                     .HasColumnType("double(12,10)");
+
+                entity.Property(e => e.DivisionId)
+                    .HasColumnName("divisionId")
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.DivisionName)
                     .IsRequired()
@@ -188,22 +220,33 @@ namespace ResultManager.Models
                     .HasColumnName("notFoundQuantity")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.Percentage)
+                    .HasColumnName("percentage")
+                    .HasColumnType("double(5,3)");
+
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.TotalVacancy)
+                    .HasColumnName("totalVacancy")
                     .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Divisions>(entity =>
             {
+                entity.HasKey(e => e.DivisionId)
+                    .HasName("PRIMARY");
+
                 entity.ToTable("divisions");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
+                entity.Property(e => e.DivisionId)
+                    .HasColumnName("divisionId")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.DivisionName)
                     .IsRequired()
-                    .HasColumnName("name")
+                    .HasColumnName("divisionName")
                     .HasMaxLength(200);
 
                 entity.Property(e => e.Percentage)
