@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 19, 2021 at 09:01 AM
+-- Generation Time: Jan 19, 2021 at 12:58 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -488,7 +488,13 @@ INSERT INTO `districts` (`districtId`, `districtName`, `divisionName`, `percenta
 
 CREATE TABLE `district_distribution` (
   `id` int(11) NOT NULL,
+  `totalVacancy` int(11) NOT NULL,
+  `divisionId` int(11) NOT NULL,
+  `divisionName` varchar(100) NOT NULL,
+  `divisionTotal` int(11) NOT NULL,
+  `districtId` int(11) NOT NULL,
   `districtName` varchar(200) NOT NULL,
+  `percentage` double(5,3) NOT NULL,
   `decimalQuantity` double(12,10) NOT NULL,
   `roundedQuantity` int(11) NOT NULL,
   `foundQuantity` int(11) NOT NULL,
@@ -499,71 +505,71 @@ CREATE TABLE `district_distribution` (
 -- Dumping data for table `district_distribution`
 --
 
-INSERT INTO `district_distribution` (`id`, `districtName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
-(1, 'Dhaka', 3.1768000000, 3, 0, 0),
-(2, 'Chattogram', 2.0102000000, 2, 0, 0),
-(3, 'Cumilla', 1.4212000000, 1, 0, 0),
-(4, 'Mymensingh', 1.3490000000, 1, 0, 0),
-(5, 'Tangail', 0.9500000000, 1, 0, 0),
-(6, 'Sylhet', 0.9044000000, 1, 0, 0),
-(7, 'Gazipur', 0.8968000000, 1, 0, 0),
-(8, 'Bogra', 0.8968000000, 1, 0, 0),
-(9, 'Noakhali', 0.8208000000, 1, 0, 0),
-(10, 'Sirajganj', 0.8170000000, 1, 0, 0),
-(11, 'Dinajpur', 0.7904000000, 1, 0, 0),
-(12, 'Narayanganj', 0.7790000000, 1, 0, 0),
-(13, 'Kishorganj', 0.7676000000, 1, 0, 0),
-(14, 'Rangpur', 0.7600000000, 1, 0, 0),
-(15, 'Brahamanbaria', 0.7486000000, 1, 0, 0),
-(16, 'Jashore', 0.7296000000, 1, 0, 0),
-(17, 'Naogaon', 0.6878000000, 1, 0, 0),
-(18, 'Rajshahi', 0.6840000000, 1, 0, 0),
-(19, 'Pabna', 0.6650000000, 1, 0, 0),
-(20, 'Sunamganj', 0.6498000000, 1, 0, 0),
-(21, 'Chandpur', 0.6384000000, 1, 0, 0),
-(22, 'Gaibanda', 0.6270000000, 1, 0, 0),
-(23, 'Khulna', 0.6118000000, 1, 0, 0),
-(24, 'Barishal', 0.6118000000, 1, 0, 0),
-(25, 'Cox`s Bazar', 0.6042000000, 1, 0, 0),
-(26, 'Jamalpur', 0.6042000000, 1, 0, 0),
-(27, 'Netrokona', 0.5890000000, 1, 0, 0),
-(28, 'Narsingdi', 0.5852000000, 1, 0, 0),
-(29, 'Habiganj', 0.5510000000, 1, 0, 0),
-(30, 'Kurigram', 0.5472000000, 1, 0, 0),
-(31, 'Satkhira', 0.5244000000, 1, 0, 0),
-(32, 'Kushtia', 0.5130000000, 1, 0, 0),
-(33, 'Faridpur', 0.5054000000, 1, 0, 0),
-(34, 'Mouluvibazar', 0.5054000000, 1, 0, 0),
-(35, 'Nilphamari', 0.4826000000, 1, 0, 0),
-(36, 'Bhola', 0.4674000000, 1, 0, 0),
-(37, 'Jhenaidah', 0.4674000000, 1, 0, 0),
-(38, 'Luxmipur', 0.4560000000, 1, 0, 0),
-(39, 'Natore', 0.4484000000, 1, 0, 0),
-(40, 'Chapai Nawabganj', 0.4332000000, 1, 0, 0),
-(41, 'Patuakhali', 0.4066000000, 1, 0, 0),
-(42, 'Bagerhat', 0.3876000000, 1, 0, 0),
-(43, 'Feni', 0.3800000000, 1, 0, 0),
-(44, 'Munshiganj', 0.3800000000, 1, 0, 0),
-(45, 'Thakurgaon', 0.3686000000, 1, 0, 0),
-(46, 'Manikganj', 0.3686000000, 1, 0, 0),
-(47, 'Sherpur', 0.3572000000, 1, 0, 0),
-(48, 'Lalmonirhat', 0.3306000000, 1, 0, 0),
-(49, 'Madaripur', 0.3078000000, 1, 0, 0),
-(50, 'Gopalganj', 0.3078000000, 1, 1, 0),
-(51, 'Shariatpur', 0.3040000000, 1, 0, 0),
-(52, 'Chuadanga', 0.2964000000, 1, 0, 0),
-(53, 'Pirojpur', 0.2926000000, 1, 0, 0),
-(54, 'Rajbari', 0.2774000000, 1, 0, 0),
-(55, 'Panchagarh', 0.2622000000, 1, 0, 0),
-(56, 'Magura', 0.2432000000, 1, 0, 0),
-(57, 'Jaipurhat', 0.2394000000, 1, 0, 0),
-(58, 'Barguna', 0.2356000000, 1, 0, 0),
-(59, 'Narail', 0.1900000000, 1, 0, 0),
-(60, 'Jhalokhathi', 0.1786000000, 1, 0, 0),
-(61, 'Meharpur', 0.1710000000, 1, 0, 0),
-(62, 'Khagrachhari', 0.1634000000, 1, 0, 0),
-(63, 'Rangamati', 0.1558000000, 1, 0, 0),
-(64, 'Bandarban', 0.1026000000, 1, 0, 0);
+INSERT INTO `district_distribution` (`id`, `totalVacancy`, `divisionId`, `divisionName`, `divisionTotal`, `districtId`, `districtName`, `percentage`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
+(1, 38, 3, 'Dhaka', 10, 18, 'Dhaka', 8.360, 3.1768000000, 3, 0, 0),
+(2, 38, 3, 'Dhaka', 10, 34, 'Tangail', 2.500, 0.9500000000, 1, 0, 0),
+(3, 38, 3, 'Dhaka', 10, 20, 'Gazipur', 2.360, 0.8968000000, 1, 0, 0),
+(4, 38, 3, 'Dhaka', 10, 28, 'Narayanganj', 2.050, 0.7790000000, 1, 0, 0),
+(5, 38, 3, 'Dhaka', 10, 23, 'Kishorganj', 2.020, 0.7676000000, 1, 0, 0),
+(6, 38, 3, 'Dhaka', 10, 29, 'Narsingdi', 1.540, 0.5852000000, 1, 0, 0),
+(7, 38, 3, 'Dhaka', 10, 19, 'Faridpur', 1.330, 0.5054000000, 1, 0, 0),
+(8, 38, 3, 'Dhaka', 10, 26, 'Munshiganj', 1.000, 0.3800000000, 1, 0, 0),
+(9, 38, 3, 'Dhaka', 10, 25, 'Manikganj', 0.970, 0.3686000000, 0, 0, 0),
+(10, 38, 3, 'Dhaka', 10, 24, 'Madaripur', 0.810, 0.3078000000, 0, 0, 0),
+(11, 38, 3, 'Dhaka', 10, 21, 'Gopalganj', 0.810, 0.3078000000, 0, 0, 0),
+(12, 38, 3, 'Dhaka', 10, 32, 'Shariatpur', 0.800, 0.3040000000, 0, 0, 0),
+(13, 38, 3, 'Dhaka', 10, 31, 'Rajbari', 0.730, 0.2774000000, 0, 0, 0),
+(14, 38, 2, 'Chattogram', 8, 10, 'Chattogram', 5.290, 2.0102000000, 2, 0, 0),
+(15, 38, 2, 'Chattogram', 8, 12, 'Cumilla', 3.740, 1.4212000000, 1, 0, 0),
+(16, 38, 2, 'Chattogram', 8, 16, 'Noakhali', 2.160, 0.8208000000, 1, 0, 0),
+(17, 38, 2, 'Chattogram', 8, 8, 'Brahamanbaria', 1.970, 0.7486000000, 1, 0, 0),
+(18, 38, 2, 'Chattogram', 8, 9, 'Chandpur', 1.680, 0.6384000000, 1, 0, 0),
+(19, 38, 2, 'Chattogram', 8, 11, 'Cox`s Bazar', 1.590, 0.6042000000, 1, 0, 0),
+(20, 38, 2, 'Chattogram', 8, 15, 'Luxmipur', 1.200, 0.4560000000, 1, 0, 0),
+(21, 38, 2, 'Chattogram', 8, 13, 'Feni', 1.000, 0.3800000000, 0, 0, 0),
+(22, 38, 2, 'Chattogram', 8, 14, 'Khagrachhari', 0.430, 0.1634000000, 0, 0, 0),
+(23, 38, 2, 'Chattogram', 8, 17, 'Rangamati', 0.410, 0.1558000000, 0, 0, 0),
+(24, 38, 2, 'Chattogram', 8, 7, 'Bandarban', 0.270, 0.1026000000, 0, 0, 0),
+(25, 38, 5, 'Rajshahi', 5, 45, 'Bogra', 2.360, 0.8968000000, 1, 0, 0),
+(26, 38, 5, 'Rajshahi', 5, 52, 'Sirajganj', 2.150, 0.8170000000, 1, 0, 0),
+(27, 38, 5, 'Rajshahi', 5, 48, 'Naogaon', 1.810, 0.6878000000, 1, 0, 0),
+(28, 38, 5, 'Rajshahi', 5, 51, 'Rajshahi', 1.800, 0.6840000000, 1, 0, 0),
+(29, 38, 5, 'Rajshahi', 5, 50, 'Pabna', 1.750, 0.6650000000, 1, 0, 0),
+(30, 38, 5, 'Rajshahi', 5, 49, 'Natore', 1.180, 0.4484000000, 0, 0, 0),
+(31, 38, 5, 'Rajshahi', 5, 46, 'Chapai Nawabganj', 1.140, 0.4332000000, 0, 0, 0),
+(32, 38, 5, 'Rajshahi', 5, 47, 'Jaipurhat', 0.630, 0.2394000000, 0, 0, 0),
+(33, 38, 6, 'Rangpur', 4, 53, 'Dinajpur', 2.080, 0.7904000000, 1, 0, 0),
+(34, 38, 6, 'Rangpur', 4, 59, 'Rangpur', 2.000, 0.7600000000, 1, 0, 0),
+(35, 38, 6, 'Rangpur', 4, 54, 'Gaibanda', 1.650, 0.6270000000, 1, 0, 0),
+(36, 38, 6, 'Rangpur', 4, 55, 'Kurigram', 1.440, 0.5472000000, 1, 0, 0),
+(37, 38, 6, 'Rangpur', 4, 57, 'Nilphamari', 1.270, 0.4826000000, 0, 0, 0),
+(38, 38, 6, 'Rangpur', 4, 60, 'Thakurgaon', 0.970, 0.3686000000, 0, 0, 0),
+(39, 38, 6, 'Rangpur', 4, 56, 'Lalmonirhat', 0.870, 0.3306000000, 0, 0, 0),
+(40, 38, 6, 'Rangpur', 4, 58, 'Panchagarh', 0.690, 0.2622000000, 0, 0, 0),
+(41, 38, 4, 'Khulna', 4, 37, 'Jashore', 1.920, 0.7296000000, 1, 0, 0),
+(42, 38, 4, 'Khulna', 4, 39, 'Khulna', 1.610, 0.6118000000, 1, 0, 0),
+(43, 38, 4, 'Khulna', 4, 44, 'Satkhira', 1.380, 0.5244000000, 1, 0, 0),
+(44, 38, 4, 'Khulna', 4, 40, 'Kushtia', 1.350, 0.5130000000, 1, 0, 0),
+(45, 38, 4, 'Khulna', 4, 38, 'Jhenaidah', 1.230, 0.4674000000, 0, 0, 0),
+(46, 38, 4, 'Khulna', 4, 35, 'Bagerhat', 1.020, 0.3876000000, 0, 0, 0),
+(47, 38, 4, 'Khulna', 4, 36, 'Chuadanga', 0.780, 0.2964000000, 0, 0, 0),
+(48, 38, 4, 'Khulna', 4, 41, 'Magura', 0.640, 0.2432000000, 0, 0, 0),
+(49, 38, 4, 'Khulna', 4, 43, 'Narail', 0.500, 0.1900000000, 0, 0, 0),
+(50, 38, 4, 'Khulna', 4, 42, 'Meharpur', 0.450, 0.1710000000, 0, 0, 0),
+(51, 38, 8, 'Mymensingh', 3, 27, 'Mymensingh', 3.550, 1.3490000000, 1, 0, 0),
+(52, 38, 8, 'Mymensingh', 3, 22, 'Jamalpur', 1.590, 0.6042000000, 1, 0, 0),
+(53, 38, 8, 'Mymensingh', 3, 30, 'Netrokona', 1.550, 0.5890000000, 1, 0, 0),
+(54, 38, 8, 'Mymensingh', 3, 33, 'Sherpur', 0.940, 0.3572000000, 0, 0, 0),
+(55, 38, 7, 'Sylhet', 3, 64, 'Sylhet', 2.380, 0.9044000000, 1, 0, 0),
+(56, 38, 7, 'Sylhet', 3, 63, 'Sunamganj', 1.710, 0.6498000000, 1, 0, 0),
+(57, 38, 7, 'Sylhet', 3, 61, 'Habiganj', 1.450, 0.5510000000, 1, 0, 0),
+(58, 38, 7, 'Sylhet', 3, 62, 'Mouluvibazar', 1.330, 0.5054000000, 0, 0, 0),
+(59, 38, 1, 'Barishal', 1, 2, 'Barishal', 1.610, 0.6118000000, 1, 0, 0),
+(60, 38, 1, 'Barishal', 1, 3, 'Bhola', 1.230, 0.4674000000, 0, 0, 0),
+(61, 38, 1, 'Barishal', 1, 5, 'Patuakhali', 1.070, 0.4066000000, 0, 0, 0),
+(62, 38, 1, 'Barishal', 1, 6, 'Pirojpur', 0.770, 0.2926000000, 0, 0, 0),
+(63, 38, 1, 'Barishal', 1, 1, 'Barguna', 0.620, 0.2356000000, 0, 0, 0),
+(64, 38, 1, 'Barishal', 1, 4, 'Jhalokhathi', 0.470, 0.1786000000, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -599,7 +605,10 @@ INSERT INTO `divisions` (`divisionId`, `divisionName`, `percentage`) VALUES
 
 CREATE TABLE `division_distribution` (
   `id` int(11) NOT NULL,
+  `totalVacancy` int(11) NOT NULL,
+  `divisionId` int(11) NOT NULL,
   `divisionName` varchar(200) NOT NULL,
+  `percentage` double(5,3) NOT NULL,
   `decimalQuantity` double(12,10) NOT NULL,
   `roundedQuantity` int(11) NOT NULL,
   `foundQuantity` int(11) NOT NULL,
@@ -610,15 +619,15 @@ CREATE TABLE `division_distribution` (
 -- Dumping data for table `division_distribution`
 --
 
-INSERT INTO `division_distribution` (`id`, `divisionName`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
-(1, 'Dhaka', 9.6102000000, 10, 1, 0),
-(2, 'Chattogram', 7.5202000000, 8, 0, 0),
-(3, 'Rajshahi', 4.8754000000, 5, 0, 0),
-(4, 'Rangpur', 4.1648000000, 4, 0, 0),
-(5, 'Khulna', 4.1382000000, 4, 0, 0),
-(6, 'Mymensingh', 2.8994000000, 3, 0, 0),
-(7, 'Sylhet', 2.6144000000, 3, 0, 0),
-(8, 'Barishal', 2.1964000000, 1, 0, 0);
+INSERT INTO `division_distribution` (`id`, `totalVacancy`, `divisionId`, `divisionName`, `percentage`, `decimalQuantity`, `roundedQuantity`, `foundQuantity`, `notFoundQuantity`) VALUES
+(1, 38, 3, 'Dhaka', 25.290, 9.6102000000, 10, 0, 0),
+(2, 38, 2, 'Chattogram', 19.790, 7.5202000000, 8, 0, 0),
+(3, 38, 5, 'Rajshahi', 12.830, 4.8754000000, 5, 0, 0),
+(4, 38, 6, 'Rangpur', 10.960, 4.1648000000, 4, 0, 0),
+(5, 38, 4, 'Khulna', 10.890, 4.1382000000, 4, 0, 0),
+(6, 38, 8, 'Mymensingh', 7.630, 2.8994000000, 3, 0, 0),
+(7, 38, 7, 'Sylhet', 6.880, 2.6144000000, 3, 0, 0),
+(8, 38, 1, 'Barishal', 5.780, 2.1964000000, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -996,8 +1005,8 @@ CREATE TABLE `posts` (
   `postName` varchar(200) NOT NULL,
   `isEligibleForQuota` tinyint(1) NOT NULL DEFAULT 0,
   `vacancies` int(11) NOT NULL,
-  `totalQuotaPercentage` double(12,10) NOT NULL,
-  `maximumQuotaQuantity` double(12,10) NOT NULL,
+  `totalQuotaPercentage` double(4,2) NOT NULL,
+  `maximumQuotaQuantity` int(11) NOT NULL,
   `quotaFoundQuantity` int(11) NOT NULL DEFAULT 0,
   `generalQuantity` int(11) NOT NULL DEFAULT 0,
   `generalFoundQuantity` int(11) NOT NULL DEFAULT 0
@@ -1008,26 +1017,29 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`postId`, `postName`, `isEligibleForQuota`, `vacancies`, `totalQuotaPercentage`, `maximumQuotaQuantity`, `quotaFoundQuantity`, `generalQuantity`, `generalFoundQuantity`) VALUES
-(1, 'Auditor', 0, 10, 70.0000000000, 7.0000000000, 0, 3, 0),
-(2, 'Cash Sarker', 0, 1, 70.0000000000, 1.0000000000, 0, 0, 0),
-(3, 'Driver', 1, 2, 70.0000000000, 1.0000000000, 1, 1, 0),
-(4, 'Office Assistant cum Computer Typist', 0, 8, 70.0000000000, 6.0000000000, 0, 2, 0),
-(5, 'Office Sohayok', 0, 9, 70.0000000000, 6.0000000000, 0, 3, 0),
-(6, 'Photocopy Operator', 0, 1, 70.0000000000, 1.0000000000, 0, 0, 0),
-(7, 'Record Keeper', 0, 3, 70.0000000000, 2.0000000000, 0, 1, 0),
-(8, 'Security Guard', 0, 1, 70.0000000000, 1.0000000000, 0, 0, 0),
-(9, 'Stenographer cum Computer Operator', 0, 3, 70.0000000000, 2.0000000000, 0, 1, 0);
+(1, 'Auditor', 0, 10, 0.00, 0, 0, 0, 0),
+(2, 'Cash Sarker', 0, 1, 0.00, 0, 0, 0, 0),
+(3, 'Driver', 1, 2, 70.00, 1, 0, 1, 0),
+(4, 'Office Assistant cum Computer Typist', 1, 8, 70.00, 6, 0, 2, 0),
+(5, 'Office Sohayok', 0, 9, 0.00, 0, 0, 0, 0),
+(6, 'Photocopy Operator', 0, 1, 0.00, 0, 0, 0, 0),
+(7, 'Record Keeper', 0, 3, 0.00, 0, 0, 0, 0),
+(8, 'Security Guard', 0, 1, 0.00, 0, 0, 0, 0),
+(9, 'Stenographer cum Computer Operator', 0, 3, 0.00, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `post_quota`
+-- Table structure for table `post_distribution`
 --
 
-CREATE TABLE `post_quota` (
+CREATE TABLE `post_distribution` (
   `id` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
   `postName` varchar(200) NOT NULL,
+  `vacancies` int(11) NOT NULL,
   `quotaName` varchar(200) NOT NULL,
+  `quotaPercentage` double(5,3) NOT NULL,
   `decimalQuantity` double(12,10) NOT NULL,
   `roundedQuantity` double(5,2) NOT NULL,
   `applicantFound` int(11) NOT NULL,
@@ -1036,15 +1048,20 @@ CREATE TABLE `post_quota` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `post_quota`
+-- Dumping data for table `post_distribution`
 --
 
-INSERT INTO `post_quota` (`id`, `postName`, `quotaName`, `decimalQuantity`, `roundedQuantity`, `applicantFound`, `applicantTransferredToGeneral`, `searchCount`) VALUES
-(1, 'Driver', 'Freedom Fighter', 0.6000000000, 1.00, 1, 0, 1),
-(2, 'Driver', 'Ansar-VDP', 0.2000000000, 0.00, 0, 0, 0),
-(3, 'Driver', 'Physically Handicapped', 0.2000000000, 0.00, 0, 0, 0),
-(4, 'Driver', 'Female', 0.3000000000, 0.00, 0, 0, 0),
-(5, 'Driver', 'Tribal', 0.1000000000, 0.00, 0, 0, 0);
+INSERT INTO `post_distribution` (`id`, `postId`, `postName`, `vacancies`, `quotaName`, `quotaPercentage`, `decimalQuantity`, `roundedQuantity`, `applicantFound`, `applicantTransferredToGeneral`, `searchCount`) VALUES
+(1, 3, 'Driver', 2, 'Freedom Fighter', 30.000, 0.6000000000, 1.00, 0, 0, 0),
+(2, 3, 'Driver', 2, 'Ansar-VDP', 10.000, 0.2000000000, 0.00, 0, 0, 0),
+(3, 3, 'Driver', 2, 'Physically Handicapped', 10.000, 0.2000000000, 0.00, 0, 0, 0),
+(4, 3, 'Driver', 2, 'Female', 15.000, 0.3000000000, 0.00, 0, 0, 0),
+(5, 3, 'Driver', 2, 'Tribal', 5.000, 0.1000000000, 0.00, 0, 0, 0),
+(6, 4, 'Office Assistant cum Computer Typist', 8, 'Freedom Fighter', 30.000, 2.4000000000, 2.00, 0, 0, 0),
+(7, 4, 'Office Assistant cum Computer Typist', 8, 'Ansar-VDP', 10.000, 0.8000000000, 1.00, 0, 0, 0),
+(8, 4, 'Office Assistant cum Computer Typist', 8, 'Physically Handicapped', 10.000, 0.8000000000, 1.00, 0, 0, 0),
+(9, 4, 'Office Assistant cum Computer Typist', 8, 'Female', 15.000, 1.2000000000, 1.00, 0, 0, 0),
+(10, 4, 'Office Assistant cum Computer Typist', 8, 'Tribal', 5.000, 0.4000000000, 1.00, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -4406,9 +4423,9 @@ ALTER TABLE `posts`
   ADD PRIMARY KEY (`postId`);
 
 --
--- Indexes for table `post_quota`
+-- Indexes for table `post_distribution`
 --
-ALTER TABLE `post_quota`
+ALTER TABLE `post_distribution`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4470,10 +4487,10 @@ ALTER TABLE `posts`
   MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `post_quota`
+-- AUTO_INCREMENT for table `post_distribution`
 --
-ALTER TABLE `post_quota`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `post_distribution`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `post_quota_division`

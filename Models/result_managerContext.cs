@@ -21,7 +21,7 @@ namespace ResultManager.Models
         public virtual DbSet<DivisionDistribution> DivisionDistribution { get; set; }
         public virtual DbSet<Divisions> Divisions { get; set; }
         public virtual DbSet<Marks> Marks { get; set; }
-        public virtual DbSet<PostQuota> PostQuota { get; set; }
+        public virtual DbSet<PostDistribution> PostDistribution { get; set; }
         public virtual DbSet<PostQuotaDivision> PostQuotaDivision { get; set; }
         public virtual DbSet<PostQuotaDivisionDistrict> PostQuotaDivisionDistrict { get; set; }
         public virtual DbSet<Posts> Posts { get; set; }
@@ -280,9 +280,9 @@ namespace ResultManager.Models
                     .HasColumnType("double(4,2)");
             });
 
-            modelBuilder.Entity<PostQuota>(entity =>
+            modelBuilder.Entity<PostDistribution>(entity =>
             {
-                entity.ToTable("post_quota");
+                entity.ToTable("post_distribution");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -300,6 +300,10 @@ namespace ResultManager.Models
                     .HasColumnName("decimalQuantity")
                     .HasColumnType("double(12,10)");
 
+                entity.Property(e => e.PostId)
+                    .HasColumnName("postId")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.PostName)
                     .IsRequired()
                     .HasColumnName("postName")
@@ -310,12 +314,20 @@ namespace ResultManager.Models
                     .HasColumnName("quotaName")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.QuotaPercentage)
+                    .HasColumnName("quotaPercentage")
+                    .HasColumnType("double(5,3)");
+
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
                     .HasColumnType("double(5,2)");
 
                 entity.Property(e => e.SearchCount)
                     .HasColumnName("searchCount")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Vacancies)
+                    .HasColumnName("vacancies")
                     .HasColumnType("int(11)");
             });
 
@@ -419,7 +431,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.MaximumQuotaQuantity)
                     .HasColumnName("maximumQuotaQuantity")
-                    .HasColumnType("double(12,10)");
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.PostName)
                     .IsRequired()
@@ -432,7 +444,7 @@ namespace ResultManager.Models
 
                 entity.Property(e => e.TotalQuotaPercentage)
                     .HasColumnName("totalQuotaPercentage")
-                    .HasColumnType("double(12,10)");
+                    .HasColumnType("double(4,2)");
 
                 entity.Property(e => e.Vacancies)
                     .HasColumnName("vacancies")

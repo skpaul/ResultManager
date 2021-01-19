@@ -10,7 +10,7 @@ namespace ResultManager.Models
         public bool IsEligibleForQuota { get; set; }
         public int Vacancies { get; set; }
         public double TotalQuotaPercentage { get; set; }
-        public double MaximumQuotaQuantity { get; set; }
+        public int MaximumQuotaQuantity { get; set; }
         public int QuotaFoundQuantity { get; set; }
         public int GeneralQuantity { get; set; }
         public int GeneralFoundQuantity { get; set; }
