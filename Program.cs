@@ -19,6 +19,18 @@ using System.Collections.Generic;
 
 namespace ResultManager
 {
+    class TempApplicant{
+        
+        public int ApplicantId { get; set; }
+        public string PermanentDistrict { get; set; }
+        public int Roll { get; set; }
+        public string UserId { get; set; }
+        public string PostName { get; set; }
+        public double Written { get; set; }
+        public double Viva { get; set; }
+        public double Total { get; set; }
+        
+    }
     class Program
     {
         static void Main(string[] args)
@@ -53,8 +65,10 @@ namespace ResultManager
                 // selectHandicapped(db);
                 // selectGeneral(db);
 
-                selectApplicant(db);
-
+                var commandText = "TRUNCATE TABLE selected_applicants";
+                db.Database.ExecuteSqlRaw(commandText);
+                selectGeneralApplicants(db);
+                selectQuotaApplicants(db);
                 typewritter("Press any key to exit...", 50);
                 Console.ReadLine();
             }
@@ -337,20 +351,20 @@ namespace ResultManager
                 if (fraction > 0.5)
                 {
                     rounded = (int)Math.Ceiling(decimalQuantity);
-                    if (totalDistribution + rounded <= divisionDist.RoundedQuantity)
+                    if (totalDistribution + rounded <= totalPostsQuantity)
                     {
                         totalDistribution += rounded;
                     }
                     else
                     {
                         rounded = (int)Math.Floor(decimalQuantity);
-                        if (totalDistribution + rounded <= divisionDist.RoundedQuantity)
+                        if (totalDistribution + rounded <= totalPostsQuantity)
                         {
                             totalDistribution += rounded;
                         }
                         else
                         {
-                            rounded = divisionDist.RoundedQuantity - totalDistribution;
+                            rounded = totalPostsQuantity - totalDistribution;
                             totalDistribution += rounded;
                         }
                     }
@@ -361,13 +375,13 @@ namespace ResultManager
                     rounded = (int)Math.Floor(decimalQuantity);
                     if (rounded > 0)
                     {
-                        if (totalDistribution + rounded <= divisionDist.RoundedQuantity)
+                        if (totalDistribution + rounded <= totalPostsQuantity)
                         {
                             totalDistribution += rounded;
                         }
                         else
                         {
-                            rounded = divisionDist.RoundedQuantity - totalDistribution;
+                            rounded = totalPostsQuantity - totalDistribution;
                             totalDistribution += rounded;
                         }
                     }
@@ -394,9 +408,9 @@ namespace ResultManager
                 db.SaveChanges();
             }
 
-            if (totalDistribution < divisionDist.RoundedQuantity)
+            if (totalDistribution < totalPostsQuantity)
             {
-                int remains = divisionDist.RoundedQuantity - totalDistribution;
+                int remains = totalPostsQuantity - totalDistribution;
                 var x = db.DistrictDistribution.Where(m => m.RoundedQuantity == 0 && m.DivisionId == divisionDist.DivisionId).FirstOrDefault();
                 if (x != null)
                 {
@@ -474,6 +488,7 @@ namespace ResultManager
 
         #endregion
 
+        //OK
         #region Temporary
         static void prepareMarks(result_managerContext db)
         {
@@ -507,20 +522,15 @@ namespace ResultManager
 
         #region applicant selection
 
-        static void selectApplicant(result_managerContext db)
+        static void selectGeneralApplicants(result_managerContext db)
         {
-            var commandText = "TRUNCATE TABLE selected_applicants";
-            db.Database.ExecuteSqlRaw(commandText);
-
-            var posts = db.Posts.OrderBy(d => d.PostId).ToList();
+            var posts = db.Posts.Where(k=>k.GeneralFoundQuantity < k.GeneralQuantity).OrderBy(d => d.PostId).ToList();
             var districtDistributions = db.DistrictDistribution.ToList();
             var divisionDistributions = db.DivisionDistribution.ToList();
 
             foreach (var post in posts)
             {
-                if (post.GeneralFoundQuantity < post.GeneralQuantity)
-                {
-                    var applicants = (from a in db.Applicants
+               var applicants = (from a in db.Applicants
                                       join m in db.Marks on a.Roll equals m.Roll
                                       where a.PostName == post.PostName
                                       orderby m.Total descending
@@ -554,9 +564,6 @@ namespace ResultManager
                                     selectedApplicant.Written = applicant.Written;
                                     selectedApplicant.Viva = applicant.Viva;
                                     selectedApplicant.Total = applicant.Total;
-                                    // applicant.IsSelected = true;
-                                    // applicant.SelectionRank = selectionRank++;
-                                    // applicant.SelectionCriteria = "general";
                                     division.FoundQuantity++;
                                     district.FoundQuantity++;
                                     post.GeneralFoundQuantity++;
@@ -566,8 +573,118 @@ namespace ResultManager
                             }//division quota check
                         } //district quota check
                     }
-                }
             }
+            db.SaveChanges();
+        }
+
+
+        static void selectQuotaApplicants(result_managerContext db)
+        {
+            var districtDistributions = db.DistrictDistribution.ToList();
+            var divisionDistributions = db.DivisionDistribution.ToList();
+            var quotas = db.Quotas.OrderBy(d => d.Priority).ToList();
+            var selectedApplicants = db.SelectedApplicants.ToList();
+            List<PostDistribution> posts = new List<PostDistribution>();
+            foreach (var quota in quotas)
+            {
+                posts = (from c in db.PostDistribution
+                         where c.RoundedQuantity > (c.ApplicantFound + c.ApplicantTransferredToGeneral) &&
+                               c.QuotaName == quota.Name
+                         orderby c.Id
+                         select c).ToList();
+
+                foreach (var post in posts)
+                {
+                    List<TempApplicant> applicants = new List<TempApplicant>();
+                    if (quota.Name == "Freedom Fighter")
+                    {
+                        applicants = db.Applicants.Where(d=>d.PostName==post.PostName && (d.Ffq=="Child of Freedom Fighter" || d.Ffq=="Grand Child of Freedom Fighter")).Join(db.Marks,applicant=>applicant.Roll, mark=>mark.Roll,(applicant,mark)=> new TempApplicant{ApplicantId=applicant.ApplicantId, Roll=applicant.Roll,PermanentDistrict=applicant.PermanentDistrict,PostName=applicant.PostName,Total=mark.Total,Viva=mark.Viva,Written=mark.Written,UserId=applicant.UserId}).OrderByDescending(d=>d.Total).ToList();
+                        //  applicants = (from a in db.Applicants
+                        //                   join m in db.Marks on a.Roll equals m.Roll
+                        //                   where a.PostName == post.PostName &&
+                        //                       (a.Ffq == "Child of Freedom Fighter" || a.Ffq == "Grand Child of Freedom Fighter")
+                        //                   orderby m.Total descending
+                        //                   select new TempApplicant()
+                        //                   {
+                        //                       a.ApplicantId,
+                        //                     //   a.PermanentDistrict,
+                        //                     //   a.Roll,
+                        //                     //   a.UserId,
+                        //                     //   a.PostName,
+                        //                     //   m.Written,
+                        //                     //   m.Viva,
+                        //                     //   m.Total
+                        //                   }
+                        //                 ).ToList();
+                    }
+                    else
+                    {
+                         applicants = db.Applicants.Where(d=>d.PostName==post.PostName && d.Ffq== quota.Name).Join(db.Marks,applicant=>applicant.Roll, mark=>mark.Roll,(applicant,mark)=> new TempApplicant{ApplicantId=applicant.ApplicantId, Roll=applicant.Roll,PermanentDistrict=applicant.PermanentDistrict,PostName=applicant.PostName,Total=mark.Total,Viva=mark.Viva,Written=mark.Written,UserId=applicant.UserId}).OrderByDescending(d=>d.Total).ToList();
+
+                        //  applicants = (from a in db.Applicants
+                        //                   join m in db.Marks on a.Roll equals m.Roll
+                        //                   where a.PostName == post.PostName &&
+                        //                         a.Ffq == quota.Name
+                        //                   orderby m.Total descending
+                        //                   select new
+                        //                   {
+                        //                       a.ApplicantId,
+                        //                       a.PermanentDistrict,
+                        //                       a.Roll,
+                        //                       a.UserId,
+                        //                       a.PostName,
+                        //                       m.Written,
+                        //                       m.Viva,
+                        //                       m.Total
+                        //                   }
+                        //                   ).ToList();
+                    }
+
+                    int selectionCount = 0;
+                    foreach (var applicant in applicants)
+                    {
+                        //Get district distribution 
+                        var district = districtDistributions.Where(m => m.DistrictName == applicant.PermanentDistrict).First();
+                        if (district.FoundQuantity < district.RoundedQuantity)
+                        {
+                            //Get division distribution
+                            var division = divisionDistributions.Where(m => m.DivisionId == district.DivisionId).First();
+                            //check whether division quota is available
+                            if (division.FoundQuantity < division.RoundedQuantity)
+                            {
+                                //division quota is ok
+                                if (selectionCount < post.RoundedQuantity)
+                                {
+                                    var selectedApplicant = new SelectedApplicants();
+                                    selectedApplicant.ApplicantId = applicant.ApplicantId;
+                                    selectedApplicant.Roll = applicant.Roll;
+                                    selectedApplicant.UserId = applicant.UserId;
+                                    selectedApplicant.PostName = applicant.PostName;
+                                    selectedApplicant.SelectionRank = ++selectionCount;
+                                    selectedApplicant.SelectionCriteria = quota.Name;
+                                    selectedApplicant.PermanentDivision = division.DivisionName;
+                                    selectedApplicant.PermanentDistrict = district.DistrictName;
+                                    selectedApplicant.Written = applicant.Written;
+                                    selectedApplicant.Viva = applicant.Viva;
+                                    selectedApplicant.Total = applicant.Total;
+                                    division.FoundQuantity++;
+                                    district.FoundQuantity++;
+                                    post.ApplicantFound++;
+                                    db.SelectedApplicants.Add(selectedApplicant);
+                                    db.SaveChanges();
+                                }
+                            }//division quota check
+                        } //district quota check
+                    }
+                }
+
+            }
+
+
+            // var posts = db.Posts.Where(k=>k.GeneralFoundQuantity < k.GeneralQuantity).OrderBy(d => d.PostId).ToList();
+
+
+
             db.SaveChanges();
         }
       
@@ -935,6 +1052,6 @@ namespace ResultManager
                 Thread.Sleep(sleep);
             }
         }
-        
+
     }
 }
