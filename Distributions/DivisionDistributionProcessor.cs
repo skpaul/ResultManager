@@ -22,6 +22,7 @@ namespace ResultManager
         {
             var commandText = "TRUNCATE TABLE division_distribution";
             db.Database.ExecuteSqlRaw(commandText);
+            Console.WriteLine("division_distribution table truncated");
         }
 
         //OK

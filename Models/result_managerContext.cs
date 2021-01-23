@@ -140,6 +140,10 @@ namespace ResultManager.Models
                     .HasColumnName("districtName")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.DistrictPercentage)
+                    .HasColumnName("districtPercentage")
+                    .HasColumnType("double(5,3)");
+
                 entity.Property(e => e.DivisionId)
                     .HasColumnName("divisionId")
                     .HasColumnType("int(11)");
@@ -149,8 +153,8 @@ namespace ResultManager.Models
                     .HasColumnName("divisionName")
                     .HasMaxLength(100);
 
-                entity.Property(e => e.DivisionTotal)
-                    .HasColumnName("divisionTotal")
+                entity.Property(e => e.DivisionalQuantity)
+                    .HasColumnName("divisionalQuantity")
                     .HasColumnType("int(11)");
 
                 entity.Property(e => e.FoundQuantity)
@@ -160,10 +164,6 @@ namespace ResultManager.Models
                 entity.Property(e => e.NotFoundQuantity)
                     .HasColumnName("notFoundQuantity")
                     .HasColumnType("int(11)");
-
-                entity.Property(e => e.Percentage)
-                    .HasColumnName("percentage")
-                    .HasColumnType("double(5,3)");
 
                 entity.Property(e => e.RoundedQuantity)
                     .HasColumnName("roundedQuantity")
