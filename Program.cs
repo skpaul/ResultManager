@@ -48,12 +48,14 @@ namespace ResultManager
 
                 // truncatePostDistribution(db); //OK
                 // preparePostDistribution(db); //OK
+                PostDistributionProcessor postProcessor = new PostDistributionProcessor(db);
+                postProcessor.Prepare();
 
-                DistrictDistributionProcessor.TruncateTable(db); 
-                DivisionDistributionProcessor.TruncateTable(db); //OK
+                // DistrictDistributionProcessor.TruncateTable(db); 
+                // DivisionDistributionProcessor.TruncateTable(db); //OK
 
-                DivisionDistributionProcessor divProcessor = new DivisionDistributionProcessor(db);
-                divProcessor.Prepare();
+                // DivisionDistributionProcessor divProcessor = new DivisionDistributionProcessor(db);
+                // divProcessor.Prepare();
                 
 
 
