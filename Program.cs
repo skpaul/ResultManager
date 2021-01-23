@@ -49,27 +49,30 @@ namespace ResultManager
                 truncatePostDistribution(db); //OK
                 preparePostDistribution(db); //OK
 
-                truncateDistrictQuota(db); //OK
-                truncateDivisionDistribution(db); //OK 
-                prepareDivisionDistribution(db); //OK
+                DistrictDistributionProcessor.TruncateTable(db); 
+                DivisionDistributionProcessor.TruncateTable(db); //OK
+
+                DivisionDistributionProcessor divProcessor = new DivisionDistributionProcessor(db);
+                divProcessor.Prepare();
+                
 
 
                 // truncatePostQuotaDivision(db);
                 // preparePostQuotaDivision(db);
 
                 // preparePostQuotaDivisionDistrict(db);
-                prepareMarks(db);
+                //prepareMarks(db);
 
                 // selectFreedomFighters(db);
                 // selectAnsarVDP(db);
                 // selectHandicapped(db);
                 // selectGeneral(db);
 
-                var commandText = "TRUNCATE TABLE selected_applicants";
-                db.Database.ExecuteSqlRaw(commandText);
-                selectGeneralApplicants(db);
-                selectQuotaApplicants(db);
-                typewritter("Press any key to exit...", 50);
+                // var commandText = "TRUNCATE TABLE selected_applicants";
+                // db.Database.ExecuteSqlRaw(commandText);
+                // selectGeneralApplicants(db);
+                // selectQuotaApplicants(db);
+                // typewritter("Press any key to exit...", 50);
                 Console.ReadLine();
             }
             catch (System.Exception exp)
@@ -247,212 +250,9 @@ namespace ResultManager
         }
         #endregion
 
-        //OK
-        #region Division Distribution
-        //Ok
-        static void truncateDivisionDistribution(result_managerContext db)
-        {
-            var commandText = "TRUNCATE TABLE division_distribution";
-            db.Database.ExecuteSqlRaw(commandText);
-        }
-
-        //OK
-        static void prepareDivisionDistribution(result_managerContext db)
-        {
-            var totalVacancies = db.Posts.Sum(k => k.Vacancies);
-            int totalDistribution = 0;
-            List<DivisionDistribution> divisionDistributions = new List<DivisionDistribution>();
-
-            var divisions = db.Divisions.OrderByDescending(k => k.Percentage).ToList();
-            var totalDivisions = divisions.Count();
-
-            foreach (var division in divisions)
-            {
-                double decimalQuantity = ((double)division.Percentage / 100) * totalVacancies;
-                double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
-
-                int rounded = 0;
-                if (fraction > 0.5)
-                {
-                    rounded = (int)Math.Ceiling(decimalQuantity);
-                    if (totalDistribution + rounded <= totalVacancies)
-                    {
-                        totalDistribution += rounded;
-                    }
-                    else
-                    {
-                        rounded = (int)Math.Floor(decimalQuantity);
-                        if (totalDistribution + rounded <= totalVacancies)
-                        {
-                            totalDistribution += rounded;
-                        }
-                        else
-                        {
-                            rounded = totalVacancies - totalDistribution;
-                            totalDistribution += rounded;
-                        }
-                    }
-                } //fraction > 0.5
-                else
-                {
-                    rounded = (int)Math.Floor(decimalQuantity);
-                    if (totalDistribution + rounded <= totalVacancies)
-                    {
-                        totalDistribution += rounded;
-                    }
-                    else
-                    {
-                        rounded = totalVacancies - totalDistribution;
-                        totalDistribution += rounded;
-                    }
-                }
-
-                DivisionDistribution dist = new DivisionDistribution()
-                {
-                    DivisionId = division.DivisionId,
-                    DivisionName = division.DivisionName,
-                    Percentage = division.Percentage,
-                    DecimalQuantity = decimalQuantity,
-                    RoundedQuantity = rounded,
-                    FoundQuantity = 0,
-                    NotFoundQuantity = 0,
-                    TotalVacancy = totalVacancies
-                };
-                // divisionDistributions.Add(dist);
-                db.DivisionDistribution.Add(dist);
-                db.SaveChanges();
-                prepareDistrictDistribution(totalVacancies, dist, db);
-            }
-        }
-
-        #endregion
-
-        //OK
-        #region District Distribution
-        //OK
-        static void truncateDistrictQuota(result_managerContext db)
-        {
-            var commandText = "TRUNCATE TABLE district_distribution";
-            db.Database.ExecuteSqlRaw(commandText);
-        }
-
+    
         //OK
 
-        static void prepareDistrictDistribution(int totalPostsQuantity, DivisionDistribution divisionDist, result_managerContext db)
-        {
-            var districts = db.Districts.Where(m => m.DivisionName == divisionDist.DivisionName).OrderByDescending(k => k.Percentage).ToList();
-            foreach (var district in districts)
-            {
-                double decimalQuantity = ((double)district.Percentage / 100) * totalPostsQuantity;
-                double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
-                int rounded = (int)Math.Round(decimalQuantity);
-                DistrictDistribution dist = new DistrictDistribution()
-                {
-                    TotalVacancy = totalPostsQuantity,
-                    DivisionId = divisionDist.DivisionId,
-                    DivisionName = divisionDist.DivisionName,
-                    DivisionTotal = divisionDist.RoundedQuantity,
-                    DistrictId = district.DistrictId,
-                    DistrictName = district.DistrictName,
-                    Percentage = district.Percentage,
-                    DecimalQuantity = decimalQuantity,
-                    RoundedQuantity = rounded,
-                    FoundQuantity = 0,
-                    NotFoundQuantity = 0
-                };
-
-                db.DistrictDistribution.Add(dist);
-                db.SaveChanges();
-            }
-        }
-
-
-
-        static void prepareDistrictDistribution_OLD(int totalPostsQuantity, DivisionDistribution divisionDist, result_managerContext db)
-        {
-
-            int totalDistribution = 0;
-            var districts = db.Districts.Where(m => m.DivisionName == divisionDist.DivisionName).OrderByDescending(k => k.Percentage).ToList();
-            foreach (var district in districts)
-            {
-                double decimalQuantity = ((double)district.Percentage / 100) * totalPostsQuantity;
-                double fraction = decimalQuantity - Math.Truncate(decimalQuantity);
-
-                int rounded = 0;
-                if (fraction > 0.5)
-                {
-                    rounded = (int)Math.Ceiling(decimalQuantity);
-                    if (totalDistribution + rounded <= totalPostsQuantity)
-                    {
-                        totalDistribution += rounded;
-                    }
-                    else
-                    {
-                        rounded = (int)Math.Floor(decimalQuantity);
-                        if (totalDistribution + rounded <= totalPostsQuantity)
-                        {
-                            totalDistribution += rounded;
-                        }
-                        else
-                        {
-                            rounded = totalPostsQuantity - totalDistribution;
-                            totalDistribution += rounded;
-                        }
-                    }
-
-                } //fraction > 0.5
-                else
-                {
-                    rounded = (int)Math.Floor(decimalQuantity);
-                    if (rounded > 0)
-                    {
-                        if (totalDistribution + rounded <= totalPostsQuantity)
-                        {
-                            totalDistribution += rounded;
-                        }
-                        else
-                        {
-                            rounded = totalPostsQuantity - totalDistribution;
-                            totalDistribution += rounded;
-                        }
-                    }
-
-                }
-
-
-                DistrictDistribution dist = new DistrictDistribution()
-                {
-                    TotalVacancy = totalPostsQuantity,
-                    DivisionId = divisionDist.DivisionId,
-                    DivisionName = divisionDist.DivisionName,
-                    DivisionTotal = divisionDist.RoundedQuantity,
-                    DistrictId = district.DistrictId,
-                    DistrictName = district.DistrictName,
-                    Percentage = district.Percentage,
-                    DecimalQuantity = decimalQuantity,
-                    RoundedQuantity = rounded,
-                    FoundQuantity = 0,
-                    NotFoundQuantity = 0
-                };
-
-                db.DistrictDistribution.Add(dist);
-                db.SaveChanges();
-            }
-
-            // if (totalDistribution < totalPostsQuantity)
-            // {
-            //     int remains = totalPostsQuantity - totalDistribution;
-            //     var x = db.DistrictDistribution.Where(m => m.RoundedQuantity == 0 && m.DivisionId == divisionDist.DivisionId).FirstOrDefault();
-            //     if (x != null)
-            //     {
-            //         x.RoundedQuantity = remains;
-            //         db.SaveChanges();
-            //     }
-            // }
-        }
-
-
-        #endregion
 
         #region Post Quota Division
         static void truncatePostQuotaDivision(result_managerContext db)
