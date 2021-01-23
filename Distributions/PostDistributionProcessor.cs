@@ -89,7 +89,6 @@ namespace ResultManager{
                         RoundedQuantity = rounded,
                         ApplicantFound = 0,
                         ApplicantTransferredToGeneral = 0,
-                        SearchCount = 0
                     };
 
                     db.PostDistribution.Add(postDist);

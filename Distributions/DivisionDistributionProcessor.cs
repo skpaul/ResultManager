@@ -18,7 +18,7 @@ namespace ResultManager
          //OK
         #region Division Distribution
         //Ok
-        public static void TruncateTable(result_managerContext db)
+        private void TruncateTable()
         {
             var commandText = "TRUNCATE TABLE division_distribution";
             db.Database.ExecuteSqlRaw(commandText);
@@ -28,6 +28,7 @@ namespace ResultManager
         //OK
         public void Prepare()
         {
+            this.TruncateTable();
             var totalVacancies = db.Posts.Sum(k => k.Vacancies);
             int totalDistribution = 0;
             List<DivisionDistribution> divisionDistributions = new List<DivisionDistribution>();
@@ -36,6 +37,8 @@ namespace ResultManager
             var totalDivisions = divisions.Count();
 
             DistrictDistributionProcessor distProcessor = new DistrictDistributionProcessor(db);
+            distProcessor.TruncateTable();
+            
             foreach (var division in divisions)
             {
                 double decimalQuantity = ((double)division.Percentage / 100) * totalVacancies;
@@ -85,7 +88,6 @@ namespace ResultManager
                     DecimalQuantity = decimalQuantity,
                     RoundedQuantity = rounded,
                     FoundQuantity = 0,
-                    NotFoundQuantity = 0,
                     TotalVacancy = totalVacancies
                 };
                 

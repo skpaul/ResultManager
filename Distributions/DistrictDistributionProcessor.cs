@@ -12,9 +12,9 @@ namespace ResultManager{
             db=context;
         }
 
-                #region District Distribution
+
         //OK
-        public static void TruncateTable(result_managerContext db)
+        public void TruncateTable()
         {
             var commandText = "TRUNCATE TABLE district_distribution";
             db.Database.ExecuteSqlRaw(commandText);
@@ -44,16 +44,11 @@ namespace ResultManager{
                     DecimalQuantity = decimalQuantity,
                     RoundedQuantity = rounded,
                     FoundQuantity = 0,
-                    NotFoundQuantity = 0
                 };
 
                 db.DistrictDistribution.Add(dist);
                 db.SaveChanges();
             }
         }
-
-
-
-        #endregion
     }
 }

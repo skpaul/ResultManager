@@ -43,32 +43,19 @@ namespace ResultManager
             try
             {
                 // resetApplicantTable(db); //ok
-                // resetPostTable(db); //ok
-                // preparePosts(db);
 
-                // truncatePostDistribution(db); //OK
-                // preparePostDistribution(db); //OK
+                PostPreparation postPreparation = new PostPreparation(db);
+                postPreparation.preparePosts();
+               
                 PostDistributionProcessor postProcessor = new PostDistributionProcessor(db);
                 postProcessor.Prepare();
 
-                // DistrictDistributionProcessor.TruncateTable(db); 
-                // DivisionDistributionProcessor.TruncateTable(db); //OK
-
-                // DivisionDistributionProcessor divProcessor = new DivisionDistributionProcessor(db);
-                // divProcessor.Prepare();
-                
-
-
-                // truncatePostQuotaDivision(db);
-                // preparePostQuotaDivision(db);
-
-                // preparePostQuotaDivisionDistrict(db);
+                DivisionDistributionProcessor divProcessor = new DivisionDistributionProcessor(db);
+                divProcessor.Prepare();
+               
                 //prepareMarks(db);
 
-                // selectFreedomFighters(db);
-                // selectAnsarVDP(db);
-                // selectHandicapped(db);
-                // selectGeneral(db);
+              
 
                 // var commandText = "TRUNCATE TABLE selected_applicants";
                 // db.Database.ExecuteSqlRaw(commandText);
@@ -107,48 +94,6 @@ namespace ResultManager
         }
         #endregion
 
-        #region posts
-        //reset posts table
-        static void resetPostTable(result_managerContext db)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            typewritter("Resetting post table...");
-            Thread.Sleep(300);
-            var commandText = "update posts set totalQuotaPercentage=0, maximumQuotaQuantity=0, quotaFoundQuantity=0, generalQuantity=0, generalFoundQuantity=0";
-            db.Database.ExecuteSqlRaw(commandText);
-        }
-
-
-
-        //This method breakdowns vacancies into totalQuotaPercentage and totalQuotaQuantity.
-        static void preparePosts(result_managerContext db)
-        {
-
-            var quotaTotal = db.Quotas.Sum(s => s.Percentage);
-
-            var posts = db.Posts.OrderBy(o => o.PostId).ToList();
-            foreach (var post in posts)
-            {
-                if (post.IsEligibleForQuota)
-                {
-                    post.TotalQuotaPercentage = quotaTotal;
-                    double d = (double)quotaTotal / 100;
-                    double v = (double)d * post.Vacancies;
-                    double quantity = v;
-                    post.MaximumQuotaQuantity = (int)Math.Round(v);
-                    post.GeneralQuantity = post.Vacancies - (int)post.MaximumQuotaQuantity;
-                }
-                else
-                {
-                    post.GeneralQuantity = post.Vacancies;
-                }
-            }
-            db.SaveChanges();
-        }
-
-        #endregion
-
-       
     
         //OK
 
@@ -287,7 +232,7 @@ namespace ResultManager
                                     selectedApplicant.Roll = applicant.Roll;
                                     selectedApplicant.UserId = applicant.UserId;
                                     selectedApplicant.PostName = applicant.PostName;
-                                    selectedApplicant.SelectionRank = ++selectionCount;
+                                    
                                     selectedApplicant.SelectionCriteria = "General";
                                     selectedApplicant.PermanentDivision = division.DivisionName;
                                     selectedApplicant.PermanentDistrict = district.DistrictName;
@@ -390,7 +335,6 @@ namespace ResultManager
                                     selectedApplicant.Roll = applicant.Roll;
                                     selectedApplicant.UserId = applicant.UserId;
                                     selectedApplicant.PostName = applicant.PostName;
-                                    selectedApplicant.SelectionRank = ++selectionCount;
                                     selectedApplicant.SelectionCriteria = quota.Name;
                                     selectedApplicant.PermanentDivision = division.DivisionName;
                                     selectedApplicant.PermanentDistrict = district.DistrictName;
